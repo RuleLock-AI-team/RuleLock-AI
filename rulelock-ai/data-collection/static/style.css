@@ -1,0 +1,5 @@
+body { font-family: sans-serif; margin: 2rem; max-width: 640px; }
+h1 { font-size: 1.4rem; }
+.product { border: 1px solid #ddd; padding: 10px; margin-bottom: 8px; border-radius: 6px; }
+input, button { padding: 8px; font-size: 1rem; }
+pre { background: #f4f4f4; padding: 10px; border-radius: 6px; }

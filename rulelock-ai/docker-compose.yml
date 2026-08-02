@@ -1,0 +1,36 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: rulelock
+      POSTGRES_PASSWORD: rulelock
+      POSTGRES_DB: rulelock
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data-collection/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+
+  data-collection:
+    build: ./data-collection
+    ports:
+      - "5001:5001"
+    environment:
+      DATABASE_URL: postgresql://rulelock:rulelock@postgres:5432/rulelock
+    depends_on:
+      - postgres
+
+  rule-engine:
+    build: ./rule-engine
+    ports:
+      - "5002:5002"
+
+  anomaly-detection:
+    build: ./anomaly-detection
+    ports:
+      - "5003:5003"
+
+  enforcement-engine:
+    build: ./enforcement-engine
+    ports:
+      - "5004:5004"
