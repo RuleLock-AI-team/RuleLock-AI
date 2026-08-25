@@ -1,12 +1,6 @@
 """
 RuleLock AI — Component 4: append-only audit log
 Owner: Mishen
-
-Every automated action gets written here BEFORE the response returns —
-a record of what the system already did, not a queue waiting on a
-human decision. Uses SQLite for local dev/CI; point AUDIT_LOG at the
-shared Postgres `audit_log` table (see data-collection/schema.sql) for
-the integrated demo.
 """
 import sqlite3
 import os
