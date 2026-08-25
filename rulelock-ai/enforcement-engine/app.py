@@ -1,10 +1,6 @@
 """
 RuleLock AI — Component 4: Automated Enforcement Engine (service wrapper)
 Owner: Mishen
-
-Accepts a rule-check result and an anomaly score, decides, acts, and
-logs — the endpoint Charuka's checkout flow calls last, after
-rule-engine and anomaly-detection.
 """
 from flask import Flask, request, jsonify
 from decision import decide
@@ -28,6 +24,7 @@ def enforce():
         rule_reason=data.get("rule_reason", ""),
         anomaly_score=data["anomaly_score"],
         payment_method=data.get("payment_method", "PREPAID"),
+        rule_code=data.get("rule_code"),
     )
     if result["decision"] != "none":
         record(data["order_id"], result["decision"], result["reason"])
