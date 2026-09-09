@@ -23,13 +23,21 @@ class RuleResult:
 
 
 def check_coupon_usage(coupons_applied: list[str]) -> RuleResult:
-    """TODO (Sadini): flag orders applying more coupons than MAX_COUPONS_PER_SESSION."""
-    raise NotImplementedError
+    if len(coupons_applied) > MAX_COUPONS_PER_SESSION:
+        return RuleResult(
+            False,
+            f"applied {len(coupons_applied)} coupons; limit is {MAX_COUPONS_PER_SESSION}",
+        )
+    return RuleResult(True)
 
 
 def check_discount_range(discount_value: float) -> RuleResult:
-    """TODO (Sadini): flag discounts outside VALID_DISCOUNT_RANGE."""
-    raise NotImplementedError
+    if not VALID_DISCOUNT_RANGE[0] <= discount_value <= VALID_DISCOUNT_RANGE[1]:
+        return RuleResult(
+            False,
+            f"discount {discount_value} outside allowed range {VALID_DISCOUNT_RANGE[0]}-{VALID_DISCOUNT_RANGE[1]}",
+        )
+    return RuleResult(True)
 
 
 def check_quantity_ceiling(sku: str, quantity: int) -> RuleResult:
@@ -45,22 +53,58 @@ def check_minimum_purchase(subtotal: float) -> RuleResult:
 
 
 def check_cod_order_value(total: float, account_verified: bool) -> RuleResult:
-    """TODO (Sadini): unverified accounts placing COD orders above COD_UNVERIFIED_ORDER_CAP should fail."""
-    raise NotImplementedError
+    if not account_verified and total > COD_UNVERIFIED_ORDER_CAP:
+        return RuleResult(
+            False,
+            f"COD order total {total} exceeds limit {COD_UNVERIFIED_ORDER_CAP} for unverified account",
+        )
+    return RuleResult(True)
 
 
 def check_cod_refusal_rate(past_orders: int, past_refusals: int) -> RuleResult:
-    """TODO (Sadini): flag phone/address combos whose refusal rate exceeds COD_REFUSAL_RATE_THRESHOLD."""
-    raise NotImplementedError
+    if past_orders <= 0:
+        return RuleResult(True)
+    refusal_rate = past_refusals / past_orders
+    if refusal_rate > COD_REFUSAL_RATE_THRESHOLD:
+        return RuleResult(
+            False,
+            f"refusal rate {refusal_rate:.2f} exceeds threshold {COD_REFUSAL_RATE_THRESHOLD}",
+        )
+    return RuleResult(True)
 
 
 def validate_transaction(transaction: dict) -> dict:
     """
     Runs every rule against a transaction dict and returns a combined
     result — this is what POST /validate exposes to the enforcement engine.
-
-    TODO (Sadini): call each check_* function above with the right
-    fields out of `transaction`, and aggregate into:
-        {"passed": bool, "failures": [reason, ...]}
     """
-    raise NotImplementedError
+    failures = []
+
+    coupons = transaction.get("coupons_applied", [])
+    if not check_coupon_usage(coupons).passed:
+        failures.append(check_coupon_usage(coupons).reason)
+
+    discount_value = float(transaction.get("discount_value", 0))
+    if not check_discount_range(discount_value).passed:
+        failures.append(check_discount_range(discount_value).reason)
+
+    sku = transaction.get("sku", "")
+    quantity = int(transaction.get("quantity", 0))
+    if not check_quantity_ceiling(sku, quantity).passed:
+        failures.append(check_quantity_ceiling(sku, quantity).reason)
+
+    subtotal = float(transaction.get("subtotal", 0))
+    if not check_minimum_purchase(subtotal).passed:
+        failures.append(check_minimum_purchase(subtotal).reason)
+
+    total = float(transaction.get("total", 0))
+    account_verified = bool(transaction.get("account_verified", True))
+    if not check_cod_order_value(total, account_verified).passed:
+        failures.append(check_cod_order_value(total, account_verified).reason)
+
+    past_orders = int(transaction.get("past_orders", 0))
+    past_refusals = int(transaction.get("past_refusals", 0))
+    if not check_cod_refusal_rate(past_orders, past_refusals).passed:
+        failures.append(check_cod_refusal_rate(past_orders, past_refusals).reason)
+
+    return {"passed": not failures, "failures": failures}
