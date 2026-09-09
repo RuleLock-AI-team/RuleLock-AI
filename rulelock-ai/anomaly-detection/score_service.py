@@ -28,19 +28,18 @@ def health():
     return jsonify(status="ok"), 200
 
 
+THRESHOLD = float(os.environ.get("ANOMALY_THRESHOLD", "-0.06"))
+
 @app.post("/score")
 def score():
-    """
-    TODO (Nihara): this returns IsolationForest's raw decision_function
-    score (lower = more anomalous). Evaluate with precision/recall/FPR
-    per the proposal and calibrate a real threshold before wiring this
-    into the enforcement engine.
-    """
     session = request.json
     features = session_to_features(session)
     model = get_model()
     raw_score = model.decision_function(features)[0]
-    return jsonify(raw_score=float(raw_score))
+    return jsonify(
+        raw_score=float(raw_score),
+        is_anomaly=bool(raw_score < THRESHOLD)
+    )
 
 
 if __name__ == "__main__":
