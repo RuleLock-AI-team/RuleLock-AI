@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RuleLock AI | Sadini</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <div class="navbar">
+        <div class="brand">
+          <span class="brand-mark"></span>
+          <span>RuleLock AI</span>
+        </div>
+        <nav class="nav-links">
+          <a href="index.html">Overview</a>
+          <a href="charuka.html">Charuka</a>
+          <a class="active" href="sadini.html">Sadini</a>
+          <a href="nihara.html">Nihara</a>
+          <a href="mishen.html">Mishen</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="branch-page">
+      <div class="branch-header">
+        <h1>Business Rule Validation</h1>
+        <span class="pill">Owner: Sadini</span>
+      </div>
+
+      <div class="branch-grid">
+        <section class="card">
+          <h3>Rule coverage</h3>
+          <p>The validation layer checks explicit business thresholds before a transaction reaches the ML stage.</p>
+
+          <div class="kpis">
+            <div class="kpi"><span>Coupons</span><strong>1 max</strong></div>
+            <div class="kpi"><span>Discount range</span><strong>0-5000</strong></div>
+            <div class="kpi"><span>Min purchase</span><strong>500 LKR</strong></div>
+          </div>
+
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Rule</th>
+                <th>Check</th>
+                <th>Result</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Coupon usage</td><td>More than 1 coupon</td><td><span class="badge alert">Reject</span></td></tr>
+              <tr><td>Discount range</td><td>Beyond LKR 5000</td><td><span class="badge alert">Reject</span></td></tr>
+              <tr><td>Quantity ceiling</td><td>Per SKU over 10</td><td><span class="badge alert">Reject</span></td></tr>
+              <tr><td>COD refusal rate</td><td>Past refusal > 50%</td><td><span class="badge alert">Hold</span></td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <aside class="card">
+          <h3>Decision logic</h3>
+          <ul class="status-list">
+            <li><strong>Coupon abuse</strong><span class="badge alert">Void</span></li>
+            <li><strong>Quantity breach</strong><span class="badge alert">Void</span></li>
+            <li><strong>COD threshold</strong><span class="badge warn">Hold</span></li>
+            <li><strong>Clean transaction</strong><span class="badge good">Pass</span></li>
+          </ul>
+        </aside>
+      </div>
+
+      <div class="page-footer">Branch component 2 — business rule validation engine</div>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

@@ -2,9 +2,33 @@
 RuleLock AI — Component 4: decision logic
 Owner: Mishen
 """
+import os
+
 from actions import void_discount, hold_cod_order, rate_limit_account
 
-ANOMALY_THRESHOLD = -0.1  # IsolationForest decision_function: below this = high-confidence abuse
+# IsolationForest decision_function: below this = high-confidence abuse.
+# MUST match anomaly-detection/score_service.py's own ANOMALY_THRESHOLD
+# (that's the value Nihara actually calibrated with evaluate.py's
+# precision/recall analysis — -0.06, not an independent guess here).
+# Previously this was hardcoded to -0.1, which silently disagreed with the
+# calibrated -0.06 used to compute anomaly_result["is_anomaly"]. Both
+# services now read the same env var so one place controls the threshold.
+ANOMALY_THRESHOLD = float(os.environ.get("ANOMALY_THRESHOLD", "-0.06"))
+
+RULE_ACTION_MAP = {
+    "coupon_usage": "void_discount",
+    "discount_range": "void_discount",
+    "quantity_ceiling": "void_discount",
+    "minimum_purchase": "void_discount",
+    "cod_order_value": "hold_cod_order",
+    "cod_refusal_rate": "hold_cod_order",
+}
+
+
+def _run_rule_action(action_name: str, order_id: str) -> dict:
+    if action_name == "hold_cod_order":
+        return hold_cod_order(order_id)
+    return void_discount(order_id)
 
 RULE_ACTION_MAP = {
     "coupon_usage": "void_discount",

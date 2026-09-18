@@ -1,24 +1,21 @@
 version: "3.9"
 services:
-  postgres:
-    image: postgres:15
-    environment:
-      POSTGRES_USER: rulelock
-      POSTGRES_PASSWORD: rulelock
-      POSTGRES_DB: rulelock
-    ports:
-      - "5432:5432"
-    volumes:
-      - ./data-collection/schema.sql:/docker-entrypoint-initdb.d/schema.sql
-
   data-collection:
     build: ./data-collection
     ports:
       - "5001:5001"
     environment:
-      DATABASE_URL: postgresql://rulelock:rulelock@postgres:5432/rulelock
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_SECRET_KEY: ${SUPABASE_SECRET_KEY}
+      # Docker Compose gives each service a DNS name matching its key below,
+      # so "rule-engine" etc. resolve inside this network without hardcoding IPs.
+      RULE_ENGINE_URL: http://rule-engine:5002/validate
+      ANOMALY_ENGINE_URL: http://anomaly-detection:5003/score
+      ENFORCEMENT_ENGINE_URL: http://enforcement-engine:5004/enforce
     depends_on:
-      - postgres
+      - rule-engine
+      - anomaly-detection
+      - enforcement-engine
 
   rule-engine:
     build: ./rule-engine
@@ -29,8 +26,15 @@ services:
     build: ./anomaly-detection
     ports:
       - "5003:5003"
+    environment:
+      # Single source of truth for the calibrated threshold — enforcement-engine
+      # reads this SAME env var so the two services can't silently disagree
+      # on what counts as anomalous (see enforcement-engine/decision.py).
+      ANOMALY_THRESHOLD: ${ANOMALY_THRESHOLD:--0.06}
 
   enforcement-engine:
     build: ./enforcement-engine
     ports:
       - "5004:5004"
+    environment:
+      ANOMALY_THRESHOLD: ${ANOMALY_THRESHOLD:--0.06}

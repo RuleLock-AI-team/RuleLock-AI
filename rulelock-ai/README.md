@@ -35,7 +35,7 @@ The problem above covers six abuse categories broadly. We've scoped the actual b
 
 Component 3 is the dedicated ML component, but the model doesn't work in isolation - it depends on two other people's work:
 
-- **Charuka's** data collection layer is what makes the model possible in the first place. Every checkout event, coupon attempt, and delivery outcome gets written to PostgreSQL, and she exports a clean sample dataset for Nihara to train and validate the model against.
+- **Charuka's** data collection layer is what makes the model possible in the first place. Every checkout event and coupon attempt gets written to the existing Cakely Supabase database, and she exports a clean sample dataset for Nihara to train and validate the model against.
 - **Nihara** owns the model itself - sourcing a public e-commerce dataset as the normal-behaviour baseline, engineering session-level features (request timing, coupon attempts per session, cross-account device/address overlap), training an Isolation Forest (comparing against a One-Class SVM), and wrapping it in a scoring function.
 - **Mishen's** enforcement engine is what actually acts on what the model finds - it takes the anomaly score Nihara's model produces, combines it with the rule engine's result, and decides whether to void a discount, hold a COD order, or rate-limit an account.
 
@@ -43,7 +43,7 @@ Component 3 is the dedicated ML component, but the model doesn't work in isolati
 
 - **Frontend:** React / HTML, CSS, JavaScript (demo storefront)
 - **Backend:** Python (Flask or FastAPI)
-- **Database:** PostgreSQL
+- **Database:** Existing Cakely Supabase project
 - **Machine Learning:** scikit-learn - Isolation Forest / One-Class SVM
 - **Security Testing:** OWASP testing methodology, Burp Suite Community Edition
 
@@ -83,7 +83,6 @@ docker-compose up --build
 
 | Service | Port |
 |---|---|
-| postgres | 5432 |
 | data-collection | 5001 |
 | rule-engine | 5002 |
 | anomaly-detection | 5003 |
