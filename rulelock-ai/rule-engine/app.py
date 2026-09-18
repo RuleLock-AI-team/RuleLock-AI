@@ -2,6 +2,8 @@
 RuleLock AI — Component 2: Business Rule Validation Engine (service wrapper)
 Owner: Sadini
 """
+import os
+
 from flask import Flask, request, jsonify
 from rules import validate_transaction
 
@@ -22,4 +24,8 @@ def validate():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5002)
+    app.run(
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", "5002")),
+        debug=os.environ.get("FLASK_DEBUG", "0") == "1",
+    )

@@ -2,6 +2,8 @@
 RuleLock AI — Component 4: Automated Enforcement Engine (service wrapper)
 Owner: Mishen
 """
+import os
+
 from flask import Flask, request, jsonify
 from decision import decide
 from audit_log import record, all_entries
@@ -37,4 +39,8 @@ def audit_log_view():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5004)
+    app.run(
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", "5004")),
+        debug=os.environ.get("FLASK_DEBUG", "0") == "1",
+    )
