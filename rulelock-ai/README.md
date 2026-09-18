@@ -90,6 +90,23 @@ docker-compose up --build
 
 Each component also runs and tests independently - see the README inside its own folder.
 
+## Deploying to Render
+
+This repository includes `render.yaml`, which defines all four backend services with
+the correct Docker roots, health checks, and private service URLs. In Render, choose
+**New + -> Blueprint**, select this repository and the `main` branch, then apply the
+Blueprint. Render will ask for the three secret values used by `rulelock-data-collection`:
+
+```text
+SUPABASE_URL
+SUPABASE_SECRET_KEY
+RULELOCK_API_TOKEN
+```
+
+The Blueprint keeps all services in Singapore and uses Render's internal service
+network. The generated public URL for `rulelock-data-collection` is the URL Cakely
+should call at `/review-order`.
+
 ## License
 
 MIT

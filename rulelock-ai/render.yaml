@@ -1,0 +1,59 @@
+services:
+  - type: web
+    name: rulelock-engine
+    runtime: docker
+    region: singapore
+    plan: free
+    rootDir: rule-engine
+    dockerfilePath: Dockerfile
+    healthCheckPath: /health
+    autoDeploy: true
+
+  - type: web
+    name: rulelock-anomaly
+    runtime: docker
+    region: singapore
+    plan: free
+    rootDir: anomaly-detection
+    dockerfilePath: Dockerfile
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: ANOMALY_THRESHOLD
+        value: "-0.06"
+
+  - type: web
+    name: rulelock-enforcement
+    runtime: docker
+    region: singapore
+    plan: free
+    rootDir: enforcement-engine
+    dockerfilePath: Dockerfile
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: ANOMALY_THRESHOLD
+        value: "-0.06"
+
+  - type: web
+    name: rulelock-data-collection
+    runtime: docker
+    region: singapore
+    plan: free
+    rootDir: data-collection
+    dockerfilePath: Dockerfile
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SECRET_KEY
+        sync: false
+      - key: RULELOCK_API_TOKEN
+        sync: false
+      - key: RULE_ENGINE_URL
+        value: http://rulelock-engine:10000/validate
+      - key: ANOMALY_ENGINE_URL
+        value: http://rulelock-anomaly:10000/score
+      - key: ENFORCEMENT_ENGINE_URL
+        value: http://rulelock-enforcement:10000/enforce
