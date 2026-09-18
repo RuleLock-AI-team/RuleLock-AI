@@ -30,6 +30,21 @@ def _run_rule_action(action_name: str, order_id: str) -> dict:
         return hold_cod_order(order_id)
     return void_discount(order_id)
 
+RULE_ACTION_MAP = {
+    "coupon_usage": "void_discount",
+    "discount_range": "void_discount",
+    "quantity_ceiling": "void_discount",
+    "minimum_purchase": "void_discount",
+    "cod_order_value": "hold_cod_order",
+    "cod_refusal_rate": "hold_cod_order",
+}
+
+
+def _run_rule_action(action_name: str, order_id: str) -> dict:
+    if action_name == "hold_cod_order":
+        return hold_cod_order(order_id)
+    return void_discount(order_id)
+
 
 def decide(order_id: str, account_id: str, rule_passed: bool, rule_reason: str,
            anomaly_score: float, payment_method: str, rule_code: str = None) -> dict:
