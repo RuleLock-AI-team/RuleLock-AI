@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RuleLock AI | Mishen</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <div class="navbar">
+        <div class="brand">
+          <span class="brand-mark"></span>
+          <span>RuleLock AI</span>
+        </div>
+        <nav class="nav-links">
+          <a href="index.html">Overview</a>
+          <a href="charuka.html">Charuka</a>
+          <a href="sadini.html">Sadini</a>
+          <a href="nihara.html">Nihara</a>
+          <a class="active" href="mishen.html">Mishen</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="branch-page">
+      <div class="branch-header">
+        <h1>Automated Enforcement</h1>
+        <span class="pill">Owner: Mishen</span>
+      </div>
+
+      <div class="branch-grid">
+        <section class="card">
+          <h3>Enforcement actions</h3>
+          <p>When a rule or anomaly score exceeds the trusted threshold, the enforcement layer acts immediately to stop the activity and log every outcome.</p>
+
+          <div class="kpis">
+            <div class="kpi"><span>Void discount</span><strong>3</strong></div>
+            <div class="kpi"><span>Hold COD</span><strong>2</strong></div>
+            <div class="kpi"><span>Rate limit</span><strong>1</strong></div>
+          </div>
+
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Trigger</th>
+                <th>Action</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Rule fail</td><td>Void discount</td><td><span class="badge good">Executed</span></td></tr>
+              <tr><td>COD rule fail</td><td>Hold order</td><td><span class="badge warn">Pending</span></td></tr>
+              <tr><td>High anomaly</td><td>Rate-limit account</td><td><span class="badge alert">Active</span></td></tr>
+              <tr><td>All clear</td><td>No action</td><td><span class="badge good">Safe</span></td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <aside class="card">
+          <h3>Audit trail</h3>
+          <ul class="status-list">
+            <li><strong>Decision engine</strong><span class="badge good">Online</span></li>
+            <li><strong>Audit log</strong><span class="badge good">Recording</span></li>
+            <li><strong>Response latency</strong><span class="badge good">Fast</span></li>
+            <li><strong>Escalation</strong><span class="badge warn">Manual review</span></li>
+          </ul>
+        </aside>
+      </div>
+
+      <div class="page-footer">Branch component 4 — automated enforcement engine</div>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RuleLock AI | Nihara</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <div class="navbar">
+        <div class="brand">
+          <span class="brand-mark"></span>
+          <span>RuleLock AI</span>
+        </div>
+        <nav class="nav-links">
+          <a href="index.html">Overview</a>
+          <a href="charuka.html">Charuka</a>
+          <a href="sadini.html">Sadini</a>
+          <a class="active" href="nihara.html">Nihara</a>
+          <a href="mishen.html">Mishen</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="branch-page">
+      <div class="branch-header">
+        <h1>AI Anomaly Detection</h1>
+        <span class="pill">Owner: Nihara</span>
+      </div>
+
+      <div class="branch-grid">
+        <section class="card">
+          <h3>Model focus</h3>
+          <p>Isolation Forest learns the normal shape of checkout activity and highlights outliers that hide beneath normal rule thresholds.</p>
+
+          <div class="kpis">
+            <div class="kpi"><span>Sessions</span><strong>500</strong></div>
+            <div class="kpi"><span>Anomaly score</span><strong>-0.1</strong></div>
+            <div class="kpi"><span>Threshold</span><strong>Low risk</strong></div>
+          </div>
+
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th>Meaning</th>
+                <th>Signal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Coupon attempts</td><td>Repeated discount tries</td><td><span class="badge warn">Elevated</span></td></tr>
+              <tr><td>Request speed</td><td>Rapid transaction bursts</td><td><span class="badge warn">Elevated</span></td></tr>
+              <tr><td>Device overlap</td><td>Multiple accounts on one device</td><td><span class="badge alert">Anomaly</span></td></tr>
+              <tr><td>Address overlap</td><td>Shared phone + address abuse</td><td><span class="badge alert">Anomaly</span></td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <aside class="card">
+          <h3>ML outcomes</h3>
+          <ul class="status-list">
+            <li><strong>Normal flow</strong><span class="badge good">Low</span></li>
+            <li><strong>Abusive session</strong><span class="badge alert">High</span></li>
+            <li><strong>Combination attack</strong><span class="badge alert">Critical</span></li>
+            <li><strong>Model status</strong><span class="badge warn">Synthetic</span></li>
+          </ul>
+        </aside>
+      </div>
+
+      <div class="page-footer">Branch component 3 — anomaly detection with Isolation Forest</div>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

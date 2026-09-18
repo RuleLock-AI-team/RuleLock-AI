@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RuleLock AI | Charuka</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <div class="navbar">
+        <div class="brand">
+          <span class="brand-mark"></span>
+          <span>RuleLock AI</span>
+        </div>
+        <nav class="nav-links">
+          <a href="index.html">Overview</a>
+          <a class="active" href="charuka.html">Charuka</a>
+          <a href="sadini.html">Sadini</a>
+          <a href="nihara.html">Nihara</a>
+          <a href="mishen.html">Mishen</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="branch-page">
+      <div class="branch-header">
+        <h1>Data Collection & Monitoring</h1>
+        <span class="pill">Owner: Charuka</span>
+      </div>
+
+      <div class="branch-grid">
+        <section class="card">
+          <h3>Mission</h3>
+          <p>Capture every order signal, checkout attempt, discount action, device/session relationship, and COD delivery outcome so the rest of the platform can evaluate abuse accurately.</p>
+
+          <div class="kpis">
+            <div class="kpi"><span>Checkout events</span><strong>1.2k</strong></div>
+            <div class="kpi"><span>Discount attempts</span><strong>430</strong></div>
+            <div class="kpi"><span>COD outcomes</span><strong>180</strong></div>
+          </div>
+
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Signal</th>
+                <th>Purpose</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Product + qty</td><td>Order validation</td><td><span class="badge good">Live</span></td></tr>
+              <tr><td>Coupon attempts</td><td>Abuse scoring</td><td><span class="badge good">Live</span></td></tr>
+              <tr><td>Session/device ID</td><td>Cross-account overlap</td><td><span class="badge warn">Queued</span></td></tr>
+              <tr><td>Delivery outcome</td><td>COD fraud review</td><td><span class="badge warn">Queued</span></td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <aside class="card">
+          <h3>Operational focus</h3>
+          <ul class="status-list">
+            <li><strong>Schema</strong><span class="badge good">Ready</span></li>
+            <li><strong>Checkout API</strong><span class="badge good">Ready</span></li>
+            <li><strong>Postgres logging</strong><span class="badge warn">Partial</span></li>
+            <li><strong>Session correlation</strong><span class="badge warn">Planned</span></li>
+          </ul>
+        </aside>
+      </div>
+
+      <div class="page-footer">Branch component 1 — transaction monitoring and data collection</div>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
