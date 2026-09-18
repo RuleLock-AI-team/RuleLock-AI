@@ -92,7 +92,8 @@ Each component also runs and tests independently - see the README inside its own
 
 ## Deploying to Render
 
-This repository includes `render.yaml`, which defines all four backend services with
+This repository includes `rulelock-ai/render.yaml` (the repository is nested one
+directory below the GitHub root), which defines all four backend services with
 the correct Docker roots, health checks, and private service URLs. In Render, choose
 **New + -> Blueprint**, select this repository and the `main` branch, then apply the
 Blueprint. Render will ask for the three secret values used by `rulelock-data-collection`:

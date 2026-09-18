@@ -4,7 +4,7 @@ services:
     runtime: docker
     region: singapore
     plan: free
-    rootDir: rule-engine
+    rootDir: rulelock-ai/rule-engine
     dockerfilePath: Dockerfile
     healthCheckPath: /health
     autoDeploy: true
@@ -14,7 +14,7 @@ services:
     runtime: docker
     region: singapore
     plan: free
-    rootDir: anomaly-detection
+    rootDir: rulelock-ai/anomaly-detection
     dockerfilePath: Dockerfile
     healthCheckPath: /health
     autoDeploy: true
@@ -27,7 +27,7 @@ services:
     runtime: docker
     region: singapore
     plan: free
-    rootDir: enforcement-engine
+    rootDir: rulelock-ai/enforcement-engine
     dockerfilePath: Dockerfile
     healthCheckPath: /health
     autoDeploy: true
@@ -40,7 +40,7 @@ services:
     runtime: docker
     region: singapore
     plan: free
-    rootDir: data-collection
+    rootDir: rulelock-ai/data-collection
     dockerfilePath: Dockerfile
     healthCheckPath: /health
     autoDeploy: true
