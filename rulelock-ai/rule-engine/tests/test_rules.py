@@ -28,7 +28,6 @@ def test_minimum_purchase_fails_below_threshold():
 def test_minimum_purchase_passes_above_threshold():
     assert check_minimum_purchase(1000).passed
 
-
 def test_coupon_usage_fails_when_multiple_coupons_are_applied():
     result = check_coupon_usage(["WELCOME10", "SAVE500"])
     assert not result.passed
@@ -68,3 +67,25 @@ def test_validate_transaction_aggregates_all_failures():
     result = validate_transaction(transaction)
     assert not result["passed"]
     assert len(result["failures"]) >= 5
+
+
+def test_coupon_usage_passes():
+    assert check_coupon_usage(["SAVE10"]).passed
+
+
+def test_discount_range_passes():
+    assert check_discount_range(1000).passed
+
+
+def test_cod_order_value_passes():
+    assert check_cod_order_value(5000, False).passed
+
+
+def test_cod_refusal_rate_passes():
+    assert check_cod_refusal_rate(10, 2).passed
+
+
+def test_cod_refusal_rate_fails_when_threshold_is_exceeded():
+    result = check_cod_refusal_rate(10, 8)
+    assert not result.passed
+    assert "threshold" in result.reason

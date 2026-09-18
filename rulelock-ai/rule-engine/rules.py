@@ -76,7 +76,6 @@ def check_cod_order_value(total: float, account_verified: bool) -> RuleResult:
         )
     return RuleResult(True)
 
-
 def check_cod_refusal_rate(past_orders: int, past_refusals: int) -> RuleResult:
     if past_orders <= 0:
         return RuleResult(True)
@@ -89,12 +88,8 @@ def check_cod_refusal_rate(past_orders: int, past_refusals: int) -> RuleResult:
         )
     return RuleResult(True)
 
-
 def validate_transaction(transaction: dict) -> dict:
     """
-    Runs every rule against a transaction dict and returns a combined
-    result — this is what POST /validate exposes to the enforcement engine.
-
     Returns:
         passed: bool
         failures: list[str]      — human-readable reasons (unchanged, for logs/UI)
