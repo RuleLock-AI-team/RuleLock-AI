@@ -52,8 +52,8 @@ services:
       - key: RULELOCK_API_TOKEN
         sync: false
       - key: RULE_ENGINE_URL
-        value: http://rulelock-engine:10000/validate
+        value: https://rulelock-engine.onrender.com/validate
       - key: ANOMALY_ENGINE_URL
-        value: http://rulelock-anomaly:10000/score
+        value: https://rulelock-anomaly.onrender.com/score
       - key: ENFORCEMENT_ENGINE_URL
-        value: http://rulelock-enforcement:10000/enforce
+        value: https://rulelock-enforcement.onrender.com/enforce

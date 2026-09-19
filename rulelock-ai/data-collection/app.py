@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 
@@ -28,4 +30,8 @@ def browse():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", debug=True, port=PORT)
+    app.run(
+        host="0.0.0.0",
+        port=PORT,
+        debug=os.environ.get("FLASK_DEBUG", "0") == "1",
+    )
