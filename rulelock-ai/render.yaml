@@ -19,6 +19,8 @@ services:
     healthCheckPath: /health
     autoDeploy: true
     envVars:
+      - key: CAKELY_ORIGINS
+        value: https://charukagimhan2020-hub.github.io,https://nimble-blancmange-3cb45c.netlify.app
       - key: ANOMALY_THRESHOLD
         value: "-0.06"
 
@@ -32,6 +34,8 @@ services:
     healthCheckPath: /health
     autoDeploy: true
     envVars:
+      - key: CAKELY_ORIGINS
+        value: https://charukagimhan2020-hub.github.io,https://nimble-blancmange-3cb45c.netlify.app
       - key: ANOMALY_THRESHOLD
         value: "-0.06"
 

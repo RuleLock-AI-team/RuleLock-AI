@@ -5,10 +5,18 @@ Owner: Mishen
 import os
 
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from decision import decide
 from audit_log import record, all_entries
 
 app = Flask(__name__)
+CORS(
+    app,
+    origins=[origin.strip().rstrip("/") for origin in os.environ.get(
+        "CAKELY_ORIGINS",
+        "https://charukagimhan2020-hub.github.io,https://nimble-blancmange-3cb45c.netlify.app",
+    ).split(",") if origin.strip()],
+)
 
 
 @app.get("/health")
