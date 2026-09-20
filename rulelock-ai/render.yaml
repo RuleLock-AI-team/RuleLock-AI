@@ -51,6 +51,8 @@ services:
         sync: false
       - key: RULELOCK_API_TOKEN
         sync: false
+      - key: CAKELY_ORIGIN
+        value: https://charukagimhan2020-hub.github.io
       - key: RULE_ENGINE_URL
         value: https://rulelock-engine.onrender.com/validate
       - key: ANOMALY_ENGINE_URL

@@ -3,13 +3,13 @@ import os
 from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 
-from config import PORT
+from config import CAKELY_ORIGIN, PORT
 from catalog import DEFAULT_PRODUCTS
 from db import get_products
 from routes.events import bp as events_bp
 
 app = Flask(__name__, static_folder="static", static_url_path="")
-CORS(app)
+CORS(app, origins=[CAKELY_ORIGIN])
 app.register_blueprint(events_bp)
 
 
