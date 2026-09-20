@@ -1,0 +1,25 @@
+[build]
+  publish = "."
+
+[functions]
+  directory = "netlify/functions"
+
+[[redirects]]
+  from = "/dashboard"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/attack-simulation"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/audit-log"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/pipeline"
+  to = "/index.html"
+  status = 200

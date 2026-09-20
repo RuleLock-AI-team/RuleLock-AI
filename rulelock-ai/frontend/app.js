@@ -5,6 +5,7 @@ const viteEnv = import.meta.env || {};
 const runtimeConfig = window.RULELOCK_CONFIG || {};
 const CONFIG = {
   dataUrl: runtimeConfig.DATA_COLLECTION_URL || window.RULELOCK_API_BASE || viteEnv.VITE_DATA_COLLECTION_URL || "https://rulelock-data-collection.onrender.com",
+  proxyUrl: runtimeConfig.RULELOCK_PROXY_URL || "/.netlify/functions/rulelock",
   ruleUrl: runtimeConfig.RULE_ENGINE_URL || viteEnv.VITE_RULE_ENGINE_URL || "https://rulelock-engine.onrender.com",
   anomalyUrl: runtimeConfig.ANOMALY_URL || viteEnv.VITE_ANOMALY_URL || "https://rulelock-anomaly.onrender.com",
   enforcementUrl: runtimeConfig.ENFORCEMENT_URL || viteEnv.VITE_ENFORCEMENT_URL || "https://rulelock-enforcement.onrender.com",
@@ -39,7 +40,15 @@ async function jsonFetch(url, options = {}) {
 }
 
 async function dataGet(path) {
-  return jsonFetch(`${CONFIG.dataUrl}${path}`, { headers: authHeaders() });
+  return jsonFetch(`${CONFIG.proxyUrl}?path=${encodeURIComponent(path)}`);
+}
+
+async function dataPost(path, payload) {
+  return jsonFetch(`${CONFIG.proxyUrl}?path=${encodeURIComponent(path)}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
 }
 
 function useRoute() {
@@ -328,11 +337,7 @@ function AttackSimulation() {
     setLoading(true);
     setResult(null);
     try {
-      const response = await jsonFetch(`${CONFIG.dataUrl}/review-order`, {
-        method: "POST",
-        headers: authHeaders(),
-        body: JSON.stringify(scenario.payload(orderId, sessionSeed)),
-      });
+      const response = await dataPost("/review-order", scenario.payload(orderId, sessionSeed));
       setResult({ ok: true, response, timestamp: nowStamp() });
     } catch (error) {
       setResult({ ok: false, error: error.message, timestamp: nowStamp() });
