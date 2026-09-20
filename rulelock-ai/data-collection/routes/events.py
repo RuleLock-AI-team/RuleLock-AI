@@ -8,6 +8,7 @@ from config import RULELOCK_API_TOKEN
 from db import (
     get_coupon,
     get_products,
+    get_recent_review_events,
     get_rulelock_setting,
     get_session_events,
     insert_event,
@@ -140,6 +141,58 @@ def _review_response(order_id, decision, reason, rule_result=None, anomaly_resul
     }
 
 
+def _event_metadata(row):
+    return row.get("metadata") or {}
+
+
+def _rule_result(metadata):
+    return metadata.get("rule_result") or {}
+
+
+def _anomaly_result(metadata):
+    return metadata.get("anomaly_result") or {}
+
+
+def _enforcement_result(metadata):
+    return metadata.get("enforcement_result") or {}
+
+
+def _feed_action(metadata):
+    enforcement_decision = _enforcement_result(metadata).get("decision")
+    if enforcement_decision == "rate_limit_account":
+        return "SUSPEND"
+    decision = metadata.get("decision")
+    return {
+        "reject": "VOID",
+        "hold": "HOLD",
+        "accept": "PASS",
+    }.get(decision, "PASS")
+
+
+def _empty_summary():
+    return {
+        "threats_blocked": 0,
+        "threats_blocked_delta": 0,
+        "rule_violations": {"total": 0, "coupon": 0, "cod": 0},
+        "anomaly_detections": 0,
+        "discounts_voided": 0,
+        "cod_orders_held": 0,
+        "accounts_suspended": 0,
+        "abuse_breakdown": {
+            "coupon_discount_abuse": 0,
+            "price_quantity_manipulation": 0,
+            "cod_fake_order_abuse": 0,
+        },
+        "enforcement_feed": [],
+        "components": {
+            "transaction_monitor": {"events_captured_24h": 0, "avg_latency": "-", "sessions_active": 0, "db_write_errors": 0},
+            "rule_engine": {"requests_validated_24h": 0, "rule_violations": 0, "avg_validation_time": "-", "false_positives": "-"},
+            "anomaly_detection": {"model": "Isolation Forest", "anomaly_threshold": "-0.06", "precision": "-", "false_positive_rate": "-"},
+            "enforcement_engine": {"actions_taken_24h": 0, "avg_decision_time": "-", "audit_log_entries": 0, "manual_overrides": 0},
+        },
+    }
+
+
 def _run_review_pipeline(order_id, account_id, payment_method, order_payload, features):
     rule_result = call_rule_engine(order_payload)
     anomaly_result = call_anomaly_engine(features)
@@ -157,6 +210,120 @@ def _run_review_pipeline(order_id, account_id, payment_method, order_payload, fe
         payment_method=payment_method,
     )
     return rule_result, anomaly_result, enforcement_result
+
+
+@bp.get("/dashboard/summary")
+def dashboard_summary():
+    if not _authorized_request():
+        return jsonify(error="invalid RuleLock authorization"), 401
+    try:
+        rows = get_recent_review_events(hours=24, limit=200) or []
+    except (RequestException, RuntimeError):
+        rows = []
+    summary = _empty_summary()
+
+    if not rows:
+        return jsonify(summary), 200
+
+    coupon_codes = {"coupon_usage", "discount_range"}
+    cod_codes = {"cod_order_value", "cod_refusal_rate"}
+    price_quantity_codes = {"quantity_ceiling", "minimum_purchase"}
+
+    coupon_violations = 0
+    cod_violations = 0
+    price_quantity_violations = 0
+    feed = []
+
+    for row in rows:
+        metadata = _event_metadata(row)
+        rule = _rule_result(metadata)
+        anomaly = _anomaly_result(metadata)
+        enforcement = _enforcement_result(metadata)
+        rule_code = rule.get("rule_code")
+
+        if metadata.get("decision") in {"hold", "reject"}:
+            summary["threats_blocked"] += 1
+        if rule_code in coupon_codes:
+            coupon_violations += 1
+        if rule_code in cod_codes:
+            cod_violations += 1
+        if rule_code in price_quantity_codes:
+            price_quantity_violations += 1
+        if anomaly.get("is_anomaly"):
+            summary["anomaly_detections"] += 1
+        if enforcement.get("decision") == "void_discount":
+            summary["discounts_voided"] += 1
+        if enforcement.get("decision") == "hold_cod_order":
+            summary["cod_orders_held"] += 1
+        if enforcement.get("decision") == "rate_limit_account":
+            summary["accounts_suspended"] += 1
+
+        if len(feed) < 20:
+            feed.append({
+                "timestamp": row.get("created_at"),
+                "action": _feed_action(metadata),
+                "description": metadata.get("reason", "RuleLock review completed"),
+                "order_id": row.get("order_id"),
+                "rule_code": rule_code,
+            })
+
+    rule_total = coupon_violations + cod_violations + price_quantity_violations
+    summary["rule_violations"] = {
+        "total": rule_total,
+        "coupon": coupon_violations,
+        "cod": cod_violations,
+    }
+    summary["abuse_breakdown"] = {
+        "coupon_discount_abuse": coupon_violations,
+        "price_quantity_manipulation": price_quantity_violations,
+        "cod_fake_order_abuse": cod_violations,
+    }
+    summary["enforcement_feed"] = feed
+    summary["components"]["transaction_monitor"].update({"events_captured_24h": len(rows), "sessions_active": len({(_event_metadata(r).get("session_id")) for r in rows if _event_metadata(r).get("session_id")})})
+    summary["components"]["rule_engine"]["requests_validated_24h"] = len(rows)
+    summary["components"]["rule_engine"]["rule_violations"] = rule_total
+    summary["components"]["enforcement_engine"]["actions_taken_24h"] = summary["threats_blocked"]
+    summary["components"]["enforcement_engine"]["audit_log_entries"] = len(rows)
+    return jsonify(summary), 200
+
+
+@bp.get("/audit-log")
+def audit_log():
+    if not _authorized_request():
+        return jsonify(error="invalid RuleLock authorization"), 401
+    action_filter = request.args.get("action")
+    search = request.args.get("search", "").strip().lower()
+    try:
+        limit = min(int(request.args.get("limit", 50)), 200)
+    except (TypeError, ValueError):
+        limit = 50
+
+    try:
+        rows = get_recent_review_events(hours=24 * 7, limit=limit) or []
+    except (RequestException, RuntimeError):
+        rows = []
+    entries = []
+    for row in rows:
+        metadata = _event_metadata(row)
+        action = _feed_action(metadata)
+        if action_filter and action_filter != "ALL" and action != action_filter:
+            continue
+        rule = _rule_result(metadata)
+        anomaly = _anomaly_result(metadata)
+        entry = {
+            "action_id": f"ACT-{row.get('event_id') or row.get('id') or row.get('order_id')}",
+            "timestamp": row.get("created_at"),
+            "action": action,
+            "reason": metadata.get("reason", ""),
+            "rule_violated": rule.get("rule_code"),
+            "score": anomaly.get("raw_score"),
+            "order_id": row.get("order_id"),
+        }
+        if search and search not in str(entry).lower():
+            continue
+        entries.append(entry)
+
+    return jsonify({"records": entries, "count": len(entries)}), 200
 
 
 @bp.post("/cart")

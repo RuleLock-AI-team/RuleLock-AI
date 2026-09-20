@@ -1,5 +1,6 @@
 import requests
 import uuid
+from datetime import datetime, timedelta, timezone
 
 from config import SUPABASE_SECRET_KEY, SUPABASE_URL
 
@@ -84,6 +85,21 @@ def get_session_events(session_id):
         "transaction_events",
         method="get",
         params={"select": "event_type,created_at,user_id,metadata", "metadata->>session_id": f"eq.{session_id}", "order": "created_at.asc"},
+    )
+
+
+def get_recent_review_events(hours=24, limit=200):
+    since = datetime.now(timezone.utc) - timedelta(hours=hours)
+    return _request(
+        "transaction_events",
+        method="get",
+        params={
+            "select": "event_id,event_type,created_at,user_id,order_id,metadata",
+            "event_type": "eq.RULELOCK_REVIEW",
+            "created_at": f"gte.{since.isoformat()}",
+            "order": "created_at.desc",
+            "limit": str(limit),
+        },
     )
 
 
