@@ -13,7 +13,9 @@ def test_browse_returns_products():
     client = app.test_client()
     resp = client.get("/browse")
     assert resp.status_code == 200
-    assert "sku-1" in resp.get_json()
+    products = resp.get_json()
+    assert products
+    assert all("name" in product and "price" in product for product in products.values())
 
 
 def test_review_order_rejects_invalid_token(monkeypatch):
