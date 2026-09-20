@@ -60,6 +60,7 @@ def test_validate_transaction_aggregates_all_failures():
         "quantity": 50,
         "subtotal": 100,
         "total": 20000,
+        "payment_method": "COD",
         "account_verified": False,
         "past_orders": 10,
         "past_refusals": 6,
@@ -67,6 +68,23 @@ def test_validate_transaction_aggregates_all_failures():
     result = validate_transaction(transaction)
     assert not result["passed"]
     assert len(result["failures"]) >= 5
+
+
+def test_validate_transaction_skips_cod_rules_for_prepaid_orders():
+    transaction = {
+        "coupons_applied": [],
+        "discount_value": 0,
+        "sku": "sku-1",
+        "quantity": 1,
+        "subtotal": 20000,
+        "total": 20000,
+        "payment_method": "PREPAID",
+        "account_verified": False,
+        "past_orders": 10,
+        "past_refusals": 10,
+    }
+    result = validate_transaction(transaction)
+    assert result["passed"]
 
 
 def test_coupon_usage_passes():

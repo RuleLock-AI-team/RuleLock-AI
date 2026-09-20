@@ -30,7 +30,23 @@ table.
 | POST | `/cart` | Calculate a cart, and log it when `session_id` is supplied |
 | POST | `/apply-coupon` | Apply a coupon, and log the attempt when `session_id` is supplied |
 | POST | `/checkout` | Log checkout, call rule/anomaly services, and return their results |
+| POST | `/review-order` | Secured Cakely pre-payment review endpoint |
+| GET/POST | `/settings/rulelock` | Secured owner-toggle endpoint backed by Cakely `platform_settings` |
 
 `RULE_ENGINE_URL` and `ANOMALY_ENGINE_URL` are optional. When unset or
 unreachable, checkout uses local pass-through stubs so the service remains
 usable during local development.
+
+`/review-order` returns a normalized Cakely handoff:
+
+```json
+{
+  "decision": "accept",
+  "payment_action": "capture_payment",
+  "cakely_order_status": "approved_for_payment"
+}
+```
+
+For `hold`, Cakely should not capture payment and should show the order as
+`review`. For `reject`, Cakely should not capture payment and should show the
+order as `blocked`.

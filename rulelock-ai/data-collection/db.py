@@ -83,5 +83,28 @@ def get_session_events(session_id):
     return _request(
         "transaction_events",
         method="get",
-        params={"select": "event_type,created_at,metadata", "metadata->>session_id": f"eq.{session_id}", "order": "created_at.asc"},
+        params={"select": "event_type,created_at,user_id,metadata", "metadata->>session_id": f"eq.{session_id}", "order": "created_at.asc"},
     )
+
+
+def get_rulelock_setting():
+    """Read Cakely's owner toggle when the shared settings table exists."""
+    try:
+        rows = _request(
+            "platform_settings",
+            method="get",
+            params={"select": "id,rulelock_enabled,updated_at", "order": "id.asc", "limit": "1"},
+        )
+    except (RuntimeError, requests.RequestException):
+        return None
+    return rows[0] if rows else None
+
+
+def set_rulelock_setting(enabled: bool):
+    """Update Cakely's owner toggle in the shared settings table."""
+    setting = get_rulelock_setting()
+    method = "patch" if setting else "post"
+    params = {"id": f"eq.{setting['id']}"} if setting else None
+    payload = {"rulelock_enabled": bool(enabled)}
+    rows = _request("platform_settings", method=method, params=params, payload=payload)
+    return rows[0] if rows else {"rulelock_enabled": bool(enabled)}

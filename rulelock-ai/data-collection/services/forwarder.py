@@ -38,7 +38,7 @@ def call_enforcement_engine(order_id, account_id, rule_result, anomaly_result, p
         "order_id": order_id,
         "account_id": account_id,
         "rule_passed": rule_result.get("passed", True),
-        "rule_reason": "; ".join(rule_result.get("failures", [])),
+        "rule_reason": "; ".join(rule_result.get("failures", [])) or rule_result.get("reason", ""),
         "rule_code": rule_result.get("rule_code"),
         # anomaly_score kept for logging/back-compat; decide() re-derives
         # is_anomaly from it using the SAME ANOMALY_THRESHOLD env var

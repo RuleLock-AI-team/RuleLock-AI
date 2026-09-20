@@ -16,6 +16,22 @@ The endpoint returns one of these decisions:
 - `hold`: do not capture; send the order to review or ask for another payment method
 - `reject`: do not capture; block the order or discount
 
+It also returns fields Cakely can use directly:
+
+```json
+{
+  "decision": "accept",
+  "payment_action": "capture_payment",
+  "cakely_order_status": "approved_for_payment",
+  "reason": "order passed RuleLock checks"
+}
+```
+
+Use `payment_action` as the payment instruction and store
+`cakely_order_status` with the Cakely order. `approved_for_payment` means Cakely
+may capture payment server-side, then mark the order paid only after the capture
+succeeds.
+
 ## Request body
 
 `order_id` must currently be numeric because RuleLock writes it to the shared `transaction_events.order_id` column.
@@ -79,7 +95,7 @@ const review = await fetch(`${RULELOCK_API_URL}/review-order`, {
 
 if (review.decision !== "accept") {
   await updateOrder(order.id, {
-    status: review.decision === "hold" ? "review" : "blocked",
+    status: review.cakely_order_status,
     rulelock_review: review
   });
   return { status: review.decision, reason: review.reason };
@@ -111,6 +127,27 @@ values (false);
 ```
 
 Only an authenticated Cakely owner/admin may update this setting.
+
+RuleLock also exposes protected helper endpoints for the Cakely owner backend:
+
+```text
+GET  https://YOUR_RULELOCK_HOST/settings/rulelock
+POST https://YOUR_RULELOCK_HOST/settings/rulelock
+Authorization: Bearer YOUR_RULELOCK_API_TOKEN
+Content-Type: application/json
+```
+
+Body for updates:
+
+```json
+{ "rulelock_enabled": true }
+```
+
+When Cakely calls `/review-order`, RuleLock reads the shared
+`platform_settings.rulelock_enabled` value when available. Cakely may also send
+`"rulelock_enabled": false` in the review payload to bypass the pipeline for
+that order; RuleLock will return `decision=accept`, `payment_action=capture_payment`,
+and `rulelock_enabled=false`.
 
 ## Netlify environment variables
 

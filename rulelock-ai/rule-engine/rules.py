@@ -103,6 +103,7 @@ def validate_transaction(transaction: dict) -> dict:
     quantity = int(transaction.get("quantity", 0))
     subtotal = float(transaction.get("subtotal", 0))
     total = float(transaction.get("total", 0))
+    payment_method = str(transaction.get("payment_method", "PREPAID")).upper()
     account_verified = bool(transaction.get("account_verified", True))
     past_orders = int(transaction.get("past_orders", 0))
     past_refusals = int(transaction.get("past_refusals", 0))
@@ -112,8 +113,8 @@ def validate_transaction(transaction: dict) -> dict:
         check_discount_range(discount_value),
         check_quantity_ceiling(sku, quantity),
         check_minimum_purchase(subtotal),
-        check_cod_order_value(total, account_verified),
-        check_cod_refusal_rate(past_orders, past_refusals),
+        check_cod_order_value(total, account_verified) if payment_method == "COD" else RuleResult(True),
+        check_cod_refusal_rate(past_orders, past_refusals) if payment_method == "COD" else RuleResult(True),
     ]
 
     violations = [{"code": r.code, "reason": r.reason} for r in results if not r.passed]
