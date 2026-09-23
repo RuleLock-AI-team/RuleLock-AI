@@ -4,16 +4,7 @@ const RULELOCK_API_TOKEN = process.env.RULELOCK_API_TOKEN || "";
 exports.handler = async (event) => {
   const requestedPath = event.queryStringParameters?.path || "/health";
   const path = requestedPath.startsWith("/") ? requestedPath : `/${requestedPath}`;
-  const allowedPaths = [
-    "/dashboard/summary",
-    "/audit-log",
-    "/review-order",
-    "/settings/rulelock",
-    "/browse",
-    "/cart",
-    "/apply-coupon",
-    "/checkout",
-  ];
+  const allowedPaths = ["/dashboard/summary", "/audit-log", "/review-order", "/settings/rulelock"];
 
   if (!allowedPaths.some((allowed) => path === allowed || path.startsWith(`${allowed}?`))) {
     return response(404, { error: "proxy route not found" });
