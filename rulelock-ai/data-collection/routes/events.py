@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor
 import hmac
 from requests import RequestException
 
@@ -194,8 +195,15 @@ def _empty_summary():
 
 
 def _run_review_pipeline(order_id, account_id, payment_method, order_payload, features):
-    rule_result = call_rule_engine(order_payload)
-    anomaly_result = call_anomaly_engine(features)
+    # rule-engine and anomaly-detection don't depend on each other, so call
+    # them concurrently — on a cold Render free-tier instance, calling them
+    # one after another can add up to more total wait than the caller's own
+    # request timeout allows, causing valid orders to be misreported as holds.
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        rule_future = executor.submit(call_rule_engine, order_payload)
+        anomaly_future = executor.submit(call_anomaly_engine, features)
+        rule_result = rule_future.result()
+        anomaly_result = anomaly_future.result()
     if not rule_result.get("available", True) or not anomaly_result.get("available", True):
         return rule_result, anomaly_result, {
             "available": False,
