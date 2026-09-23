@@ -1,45 +1,5 @@
 services:
   - type: web
-    name: rulelock-engine
-    runtime: docker
-    region: singapore
-    plan: free
-    rootDir: rulelock-ai/rule-engine
-    dockerfilePath: Dockerfile
-    healthCheckPath: /health
-    autoDeploy: true
-
-  - type: web
-    name: rulelock-anomaly
-    runtime: docker
-    region: singapore
-    plan: free
-    rootDir: rulelock-ai/anomaly-detection
-    dockerfilePath: Dockerfile
-    healthCheckPath: /health
-    autoDeploy: true
-    envVars:
-      - key: CAKELY_ORIGINS
-        value: https://charukagimhan2020-hub.github.io,https://nimble-blancmange-3cb45c.netlify.app
-      - key: ANOMALY_THRESHOLD
-        value: "-0.06"
-
-  - type: web
-    name: rulelock-enforcement
-    runtime: docker
-    region: singapore
-    plan: free
-    rootDir: rulelock-ai/enforcement-engine
-    dockerfilePath: Dockerfile
-    healthCheckPath: /health
-    autoDeploy: true
-    envVars:
-      - key: CAKELY_ORIGINS
-        value: https://charukagimhan2020-hub.github.io,https://nimble-blancmange-3cb45c.netlify.app
-      - key: ANOMALY_THRESHOLD
-        value: "-0.06"
-
-  - type: web
     name: rulelock-data-collection
     runtime: docker
     region: singapore
@@ -57,9 +17,5 @@ services:
         sync: false
       - key: CAKELY_ORIGINS
         value: https://charukagimhan2020-hub.github.io,https://nimble-blancmange-3cb45c.netlify.app
-      - key: RULE_ENGINE_URL
-        value: https://rulelock-engine.onrender.com/validate
-      - key: ANOMALY_ENGINE_URL
-        value: https://rulelock-anomaly.onrender.com/score
-      - key: ENFORCEMENT_ENGINE_URL
-        value: https://rulelock-enforcement.onrender.com/enforce
+      - key: ANOMALY_THRESHOLD
+        value: "-0.06"

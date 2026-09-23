@@ -1,4 +1,8 @@
 version: "3.9"
+# rule-engine, anomaly-detection, and enforcement-engine now run in-process
+# inside data-collection (see data-collection/rules.py, anomaly_scoring.py,
+# decision.py). The original service folders still exist with their own
+# Dockerfiles/tests, but they're no longer part of the deployed backend.
 services:
   data-collection:
     build: ./data-collection
@@ -8,34 +12,4 @@ services:
       SUPABASE_URL: ${SUPABASE_URL}
       SUPABASE_SECRET_KEY: ${SUPABASE_SECRET_KEY}
       RULELOCK_API_TOKEN: ${RULELOCK_API_TOKEN}
-      # Docker Compose gives each service a DNS name matching its key below,
-      # so "rule-engine" etc. resolve inside this network without hardcoding IPs.
-      RULE_ENGINE_URL: http://rule-engine:5002/validate
-      ANOMALY_ENGINE_URL: http://anomaly-detection:5003/score
-      ENFORCEMENT_ENGINE_URL: http://enforcement-engine:5004/enforce
-    depends_on:
-      - rule-engine
-      - anomaly-detection
-      - enforcement-engine
-
-  rule-engine:
-    build: ./rule-engine
-    ports:
-      - "5002:5002"
-
-  anomaly-detection:
-    build: ./anomaly-detection
-    ports:
-      - "5003:5003"
-    environment:
-      # Single source of truth for the calibrated threshold — enforcement-engine
-      # reads this SAME env var so the two services can't silently disagree
-      # on what counts as anomalous (see enforcement-engine/decision.py).
-      ANOMALY_THRESHOLD: ${ANOMALY_THRESHOLD:--0.06}
-
-  enforcement-engine:
-    build: ./enforcement-engine
-    ports:
-      - "5004:5004"
-    environment:
       ANOMALY_THRESHOLD: ${ANOMALY_THRESHOLD:--0.06}

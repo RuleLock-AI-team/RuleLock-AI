@@ -3,14 +3,17 @@ const { createRoot } = ReactDOM;
 
 const viteEnv = import.meta.env || {};
 const runtimeConfig = window.RULELOCK_CONFIG || {};
+// rule-engine, anomaly-detection, and enforcement-engine now run in-process
+// inside data-collection instead of as separate hosted services, so their
+// health checks point at the same backend by default.
 const CONFIG = {
   dataUrl: runtimeConfig.DATA_COLLECTION_URL || window.RULELOCK_API_BASE || viteEnv.VITE_DATA_COLLECTION_URL || "https://rulelock-data-collection.onrender.com",
   proxyUrl: runtimeConfig.RULELOCK_PROXY_URL || "/.netlify/functions/rulelock",
-  ruleUrl: runtimeConfig.RULE_ENGINE_URL || viteEnv.VITE_RULE_ENGINE_URL || "https://rulelock-engine.onrender.com",
-  anomalyUrl: runtimeConfig.ANOMALY_URL || viteEnv.VITE_ANOMALY_URL || "https://rulelock-anomaly.onrender.com",
-  enforcementUrl: runtimeConfig.ENFORCEMENT_URL || viteEnv.VITE_ENFORCEMENT_URL || "https://rulelock-enforcement.onrender.com",
   token: runtimeConfig.RULELOCK_API_TOKEN || window.RULELOCK_API_TOKEN || viteEnv.VITE_RULELOCK_API_TOKEN || "",
 };
+CONFIG.ruleUrl = runtimeConfig.RULE_ENGINE_URL || viteEnv.VITE_RULE_ENGINE_URL || CONFIG.dataUrl;
+CONFIG.anomalyUrl = runtimeConfig.ANOMALY_URL || viteEnv.VITE_ANOMALY_URL || CONFIG.dataUrl;
+CONFIG.enforcementUrl = runtimeConfig.ENFORCEMENT_URL || viteEnv.VITE_ENFORCEMENT_URL || CONFIG.dataUrl;
 
 const ROUTES = [
   { id: "dashboard", label: "Dashboard", path: "/dashboard" },
@@ -476,9 +479,9 @@ function Pipeline({ health }) {
   }, []);
   const components = [
     ["C1", "Transaction Monitoring & Data Collection", "Charuka", "data", "Captures checkout, coupon, session, and order review events before payment capture.", ["Events Captured (24H)", summary?.components?.transaction_monitor?.events_captured_24h ?? "-"], ["Avg Latency", summary?.components?.transaction_monitor?.avg_latency ?? "-"], ["Sessions Active", summary?.components?.transaction_monitor?.sessions_active ?? "-"], ["DB Write Errors", summary?.components?.transaction_monitor?.db_write_errors ?? "-"], ["Flask", "Supabase", "REST"], "POST /review-order"],
-    ["C2", "Business Rule Validation Engine", "Sadini", "rule", "Applies deterministic business logic limits for coupons, quantities, minimums, and COD risk.", ["Requests Validated (24H)", summary?.components?.rule_engine?.requests_validated_24h ?? "-"], ["Rule Violations", summary?.components?.rule_engine?.rule_violations ?? "-"], ["Avg Validation Time", summary?.components?.rule_engine?.avg_validation_time ?? "-"], ["False Positives", summary?.components?.rule_engine?.false_positives ?? "-"], ["Flask", "Python", "Rules"], "POST /validate"],
-    ["C3", "AI-Based Anomaly Detection", "Nihara", "anomaly", "Scores session features with an Isolation Forest to catch abuse spread across accounts and requests.", ["Model", "Isolation Forest"], ["Anomaly Threshold", summary?.components?.anomaly_detection?.anomaly_threshold ?? "-0.06"], ["Precision (test set)", summary?.components?.anomaly_detection?.precision ?? "-"], ["False Positive Rate", summary?.components?.anomaly_detection?.false_positive_rate ?? "-"], ["scikit-learn", "NumPy", "joblib"], "POST /score"],
-    ["C4", "Automated Enforcement Engine", "Mishen, Lead", "enforcement", "Turns rule and anomaly results into automatic actions and records the audit trail.", ["Actions Taken (24H)", summary?.components?.enforcement_engine?.actions_taken_24h ?? "-"], ["Avg Decision Time", summary?.components?.enforcement_engine?.avg_decision_time ?? "-"], ["Audit Log Entries", summary?.components?.enforcement_engine?.audit_log_entries ?? "-"], ["Manual Overrides", summary?.components?.enforcement_engine?.manual_overrides ?? "-"], ["Flask", "SQLite", "Actions"], "POST /enforce"],
+    ["C2", "Business Rule Validation Engine", "Sadini", "rule", "Applies deterministic business logic limits for coupons, quantities, minimums, and COD risk.", ["Requests Validated (24H)", summary?.components?.rule_engine?.requests_validated_24h ?? "-"], ["Rule Violations", summary?.components?.rule_engine?.rule_violations ?? "-"], ["Avg Validation Time", summary?.components?.rule_engine?.avg_validation_time ?? "-"], ["False Positives", summary?.components?.rule_engine?.false_positives ?? "-"], ["Flask", "Python", "Rules"], "rules.validate_transaction() (in-process)"],
+    ["C3", "AI-Based Anomaly Detection", "Nihara", "anomaly", "Scores session features with an Isolation Forest to catch abuse spread across accounts and requests.", ["Model", "Isolation Forest"], ["Anomaly Threshold", summary?.components?.anomaly_detection?.anomaly_threshold ?? "-0.06"], ["Precision (test set)", summary?.components?.anomaly_detection?.precision ?? "-"], ["False Positive Rate", summary?.components?.anomaly_detection?.false_positive_rate ?? "-"], ["scikit-learn", "NumPy", "joblib"], "anomaly_scoring.score_session() (in-process)"],
+    ["C4", "Automated Enforcement Engine", "Mishen, Lead", "enforcement", "Turns rule and anomaly results into automatic actions and records the audit trail.", ["Actions Taken (24H)", summary?.components?.enforcement_engine?.actions_taken_24h ?? "-"], ["Avg Decision Time", summary?.components?.enforcement_engine?.avg_decision_time ?? "-"], ["Audit Log Entries", summary?.components?.enforcement_engine?.audit_log_entries ?? "-"], ["Manual Overrides", summary?.components?.enforcement_engine?.manual_overrides ?? "-"], ["Flask", "SQLite", "Actions"], "decision.decide() (in-process)"],
   ];
   return h("div", null,
     h("div", { className: "page-head" }, h("div", null, h("h1", null, "Pipeline Components"), h("p", null, "Four end-to-end components, each owned by one team member, composing the full RuleLock AI detection pipeline."))),
