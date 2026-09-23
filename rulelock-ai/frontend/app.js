@@ -181,9 +181,9 @@ function Dashboard({ health }) {
         h("div", { className: "feed-list" },
           summary.enforcement_feed.length ? summary.enforcement_feed.map((item, index) =>
             h("div", { className: "feed-row", key: `${item.timestamp}-${index}` },
-              h("time", null, item.timestamp || "-"),
+              h("time", null, formatTimestamp(item.timestamp)),
               h(Badge, { tone: ACTION_TONE[item.action] || "green" }, item.action || "PASS"),
-              h("span", null, item.description || "RuleLock review completed")
+              h("span", null, `${item.account_id ? `${item.account_id} — ` : ""}${item.description || "RuleLock review completed"}${item.total != null ? ` (${money(item.total)})` : ""}`)
             )
           ) : h("div", { className: "empty-state" }, "No RuleLock reviews in the last 24 hours.")
         )
@@ -432,6 +432,22 @@ function PipelineResult({ pipeline, result, tone }) {
   );
 }
 
+const ACTION_EXPLAIN = {
+  PASS: "Passed all checks — payment captured",
+  HOLD: "Held for review — payment NOT captured",
+  VOID: "Discount voided",
+  SUSPEND: "Account rate-limited",
+  FAIL: "Could not complete the review",
+  ANOMALY: "Flagged as anomalous",
+};
+
+function formatTimestamp(value) {
+  if (!value) return "-";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleString("en-LK", { year: "numeric", month: "short", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true });
+}
+
 function AuditLog() {
   const [filter, setFilter] = useState("ALL");
   const [search, setSearch] = useState("");
@@ -446,26 +462,31 @@ function AuditLog() {
   });
   return h("div", null,
     h("div", { className: "page-head" },
-      h("div", null, h("h1", null, "Enforcement Audit Log"), h("p", null, "Append-only record of every automated action taken by the enforcement engine."))
+      h("div", null, h("h1", null, "Enforcement Audit Log"), h("p", null, "Every order RuleLock has reviewed, what happened to it, and why."))
     ),
     h("div", { className: "audit-tools" },
       h("div", { className: "filter-row" }, ["ALL", "VOID", "HOLD", "SUSPEND", "PASS"].map((item) =>
         h("button", { key: item, className: filter === item ? "active" : "", onClick: () => setFilter(item) }, item)
       )),
-      h("input", { value: search, placeholder: "Search session, order, rule...", onChange: (event) => setSearch(event.target.value) }),
+      h("input", { value: search, placeholder: "Search account, order, rule...", onChange: (event) => setSearch(event.target.value) }),
       h("span", { className: "record-count" }, `${filtered.length} records`)
     ),
     h("div", { className: "table-wrap" },
       h("table", { className: "audit-table" },
-        h("thead", null, h("tr", null, ["ACTION ID", "TIMESTAMP", "ACTION", "REASON", "RULE VIOLATED", "SCORE", "ORDER"].map((label) => h("th", { key: label }, label)))),
+        h("thead", null, h("tr", null, ["DATE & TIME", "ORDER #", "ACCOUNT", "AMOUNT", "WHAT HAPPENED", "RULE", "SCORE"].map((label) => h("th", { key: label }, label)))),
         h("tbody", null, filtered.length ? filtered.map((row) => h("tr", { key: row.action_id },
-          h("td", null, row.action_id),
-          h("td", null, row.timestamp || "-"),
-          h("td", null, h(Badge, { tone: ACTION_TONE[row.action] || "green" }, row.action)),
-          h("td", null, row.reason || "-"),
+          h("td", null, formatTimestamp(row.timestamp)),
+          h("td", null, row.order_id ?? "-"),
+          h("td", null, row.customer_name || row.account_id || "-"),
+          h("td", null, row.total != null ? money(row.total) : "-"),
+          h("td", null,
+            h("div", { style: { display: "flex", alignItems: "center", gap: "8px" } },
+              h(Badge, { tone: ACTION_TONE[row.action] || "green" }, row.action),
+              h("span", null, `${ACTION_EXPLAIN[row.action] || "Reviewed"} — ${row.reason || "no reason recorded"}`)
+            )
+          ),
           h("td", null, row.rule_violated || "-"),
-          h("td", { className: Number(row.score) < -0.06 ? "risk-high" : "risk-low" }, row.score ?? "-"),
-          h("td", null, row.order_id || "-")
+          h("td", { className: Number(row.score) < -0.06 ? "risk-high" : "risk-low" }, row.score != null ? Number(row.score).toFixed(3) : "-")
         )) : h("tr", null, h("td", { colSpan: 7 }, "No audit records found.")))
       )
     )

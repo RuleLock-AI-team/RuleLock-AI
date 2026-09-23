@@ -145,6 +145,21 @@ def _event_metadata(row):
     return row.get("metadata") or {}
 
 
+def _order_context(body):
+    """Extra order details worth keeping on the audit trail alongside the
+    decision itself, so the dashboard/audit log can show who/what/how much
+    instead of just pass/hold/reject."""
+    return {
+        "account_id": body.get("account_id"),
+        "customer_name": body.get("customer_name"),
+        "sku": body.get("sku"),
+        "quantity": body.get("quantity"),
+        "subtotal": body.get("subtotal"),
+        "total": body.get("total"),
+        "payment_method": body.get("payment_method", "PREPAID"),
+    }
+
+
 def _rule_result(metadata):
     return metadata.get("rule_result") or {}
 
@@ -268,6 +283,8 @@ def dashboard_summary():
                 "description": metadata.get("reason", "RuleLock review completed"),
                 "order_id": row.get("order_id"),
                 "rule_code": rule_code,
+                "account_id": metadata.get("account_id"),
+                "total": metadata.get("total"),
             })
 
     rule_total = coupon_violations + cod_violations + price_quantity_violations
@@ -317,10 +334,15 @@ def audit_log():
             "action_id": f"ACT-{row.get('event_id') or row.get('id') or row.get('order_id')}",
             "timestamp": row.get("created_at"),
             "action": action,
+            "decision": metadata.get("decision"),
             "reason": metadata.get("reason", ""),
             "rule_violated": rule.get("rule_code"),
             "score": anomaly.get("raw_score"),
             "order_id": row.get("order_id"),
+            "account_id": metadata.get("account_id"),
+            "customer_name": metadata.get("customer_name"),
+            "payment_method": metadata.get("payment_method"),
+            "total": metadata.get("total"),
         }
         if search and search not in str(entry).lower():
             continue
@@ -466,7 +488,7 @@ def review_order():
             session_id,
             _bigint(body.get("user_id")),
             numeric_order_id,
-            response,
+            {**response, **_order_context(body)},
         )
         return jsonify(response), 200
 
@@ -507,6 +529,6 @@ def review_order():
         session_id,
         _bigint(body.get("user_id")),
         numeric_order_id,
-        response,
+        {**response, **_order_context(body)},
     )
     return jsonify(response), 200
