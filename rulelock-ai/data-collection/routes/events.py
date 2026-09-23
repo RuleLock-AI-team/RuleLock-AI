@@ -347,7 +347,10 @@ def apply_coupon():
     body = request.get_json(silent=True) or {}
     code = body.get("coupon_code", body.get("code"))
     subtotal = body.get("subtotal", 0)
-    stored_coupon = get_coupon(code) if code else None
+    try:
+        stored_coupon = get_coupon(code) if code else None
+    except (RequestException, RuntimeError):
+        stored_coupon = None
     if stored_coupon:
         coupon = {
             "type": "percent" if stored_coupon["discount_type"] == "PERCENTAGE" else "flat",

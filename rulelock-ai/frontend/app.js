@@ -13,6 +13,7 @@ const CONFIG = {
 };
 
 const ROUTES = [
+  { id: "cakely", label: "Cakely Store", path: "/cakely" },
   { id: "dashboard", label: "Dashboard", path: "/dashboard" },
   { id: "attack-simulation", label: "Attack Simulation", path: "/attack-simulation" },
   { id: "audit-log", label: "Audit Log", path: "/audit-log" },
@@ -49,6 +50,17 @@ async function dataPost(path, payload) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
+}
+
+function newSessionId() {
+  return `cakely-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function accountIdFor(name, phone) {
+  const key = `${name || "guest"}-${phone || "0"}`;
+  let hash = 0;
+  for (let i = 0; i < key.length; i += 1) hash = (hash * 31 + key.charCodeAt(i)) >>> 0;
+  return `cakely-account-${hash}`;
 }
 
 function useRoute() {
@@ -113,7 +125,7 @@ function Shell({ route, children, health }) {
       ),
       h("div", { className: "top-status" },
         h("span", { className: `status-pill ${allOnline ? "online" : "offline"}` }, allOnline ? "ALL SYSTEMS ONLINE" : "SERVICE CHECKING"),
-        h("span", { className: "version" }, "v1.0.0-demo")
+        h("span", { className: "version" }, "v1.0.0")
       )
     ),
     h("div", { className: "breadcrumb" }, "rulelock / ", current.id),
@@ -207,6 +219,203 @@ function Dashboard({ health }) {
         )
       )
     )
+  );
+}
+
+function CakelyStore() {
+  const [products, setProducts] = useState(null);
+  const [cart, setCart] = useState([]);
+  const [couponCode, setCouponCode] = useState("");
+  const [coupon, setCoupon] = useState(null);
+  const [couponError, setCouponError] = useState("");
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [form, setForm] = useState({ name: "", phone: "", address: "", accountVerified: true, paymentMethod: "PREPAID" });
+  const [session] = useState(newSessionId);
+  const [checkoutState, setCheckoutState] = useState({ loading: false, result: null, error: "" });
+
+  useEffect(() => {
+    dataGet("/browse").then((data) => setProducts(data)).catch(() => setProducts({}));
+  }, []);
+
+  function addToCart(sku, item) {
+    setCart((current) => {
+      const existing = current.find((row) => row.sku === sku);
+      if (existing) return current.map((row) => (row.sku === sku ? { ...row, qty: row.qty + 1 } : row));
+      return [...current, { sku, name: item.name, price: item.price, qty: 1 }];
+    });
+  }
+
+  function changeQty(sku, delta) {
+    setCart((current) => current
+      .map((row) => (row.sku === sku ? { ...row, qty: row.qty + delta } : row))
+      .filter((row) => row.qty > 0));
+  }
+
+  function removeFromCart(sku) {
+    setCart((current) => current.filter((row) => row.sku !== sku));
+  }
+
+  const subtotal = cart.reduce((sum, row) => sum + row.price * row.qty, 0);
+  const discount = coupon ? coupon.discount : 0;
+  const total = Math.max(subtotal - discount, 0);
+  const totalQty = cart.reduce((sum, row) => sum + row.qty, 0);
+
+  async function applyCoupon() {
+    if (!couponCode.trim()) return;
+    setCouponLoading(true);
+    setCouponError("");
+    try {
+      const response = await dataPost("/apply-coupon", { coupon_code: couponCode.trim().toUpperCase(), subtotal, session_id: session });
+      setCoupon({ code: couponCode.trim().toUpperCase(), discount: response.discount || 0 });
+    } catch (error) {
+      setCoupon(null);
+      setCouponError(error.message);
+    } finally {
+      setCouponLoading(false);
+    }
+  }
+
+  function removeCoupon() {
+    setCoupon(null);
+    setCouponCode("");
+    setCouponError("");
+  }
+
+  async function placeOrder() {
+    if (!cart.length || !form.name.trim() || !form.phone.trim() || !form.address.trim()) {
+      setCheckoutState({ loading: false, result: null, error: "Fill in your name, phone, and delivery address, and add at least one cake to the cart." });
+      return;
+    }
+    setCheckoutState({ loading: true, result: null, error: "" });
+    const orderId = nowOrderId();
+    const primary = cart[0];
+    const payload = {
+      order_id: orderId,
+      account_id: accountIdFor(form.name, form.phone),
+      user_id: Number(String(orderId).slice(-6)),
+      session_id: session,
+      payment_method: form.paymentMethod,
+      sku: primary.sku,
+      quantity: totalQty,
+      coupons_applied: coupon ? [coupon.code] : [],
+      discount_value: discount,
+      subtotal,
+      total,
+      account_verified: form.accountVerified,
+      past_orders: 0,
+      past_refusals: 0,
+      customer_name: form.name,
+      customer_phone: form.phone,
+      customer_address: form.address,
+      items: cart,
+    };
+    try {
+      const response = await dataPost("/checkout", payload);
+      setCheckoutState({ loading: false, result: { order_id: orderId, ...response }, error: "" });
+      if (response.decision === "accept") {
+        setCart([]);
+        setCoupon(null);
+        setCouponCode("");
+      }
+    } catch (error) {
+      setCheckoutState({ loading: false, result: null, error: error.message });
+    }
+  }
+
+  const entries = Object.entries(products || {});
+  return h("div", null,
+    h("div", { className: "page-head" },
+      h("div", null,
+        h("div", { className: "section-kicker" }, "CAKELY"),
+        h("h1", null, "Order a Cake"),
+        h("p", null, "Every checkout here is a real order. It is reviewed by the live RuleLock AI pipeline before payment is captured.")
+      )
+    ),
+    h("div", { className: "store-grid" },
+      h(Panel, { title: "Cake Menu" },
+        products === null ? h("div", { className: "empty-state" }, "Loading menu...") :
+        !entries.length ? h("div", { className: "empty-state" }, "No products available right now.") :
+        h("div", { className: "product-grid" }, entries.map(([sku, item]) =>
+          h("article", { className: "product-card", key: sku },
+            h("h4", null, item.name),
+            h("span", { className: "price" }, money(item.price)),
+            h("div", { className: "qty-row" },
+              h("button", { className: "add-btn", onClick: () => addToCart(sku, item) }, "Add to cart")
+            )
+          )
+        ))
+      ),
+      h("div", { className: "stack" },
+        h(Panel, { title: "Your Cart" },
+          h("div", { className: "cart-panel" },
+            !cart.length ? h("div", { className: "empty-cart" }, "Your cart is empty. Add a cake to get started.") :
+            cart.map((row) => h("div", { className: "cart-row", key: row.sku },
+              h("span", null, `${row.name} x ${row.qty}`),
+              h("span", null, money(row.price * row.qty)),
+              h("div", { className: "qty-row" },
+                h("button", { onClick: () => changeQty(row.sku, -1) }, "-"),
+                h("button", { onClick: () => changeQty(row.sku, 1) }, "+"),
+                h("button", { onClick: () => removeFromCart(row.sku) }, "Remove")
+              )
+            )),
+            h("div", { className: "coupon-row" },
+              h("input", {
+                placeholder: "Coupon code (e.g. WELCOME10)",
+                value: couponCode,
+                disabled: !!coupon,
+                onChange: (event) => setCouponCode(event.target.value),
+              }),
+              coupon
+                ? h("button", { className: "btn-outline", onClick: removeCoupon }, "Remove")
+                : h("button", { className: "btn-outline", disabled: couponLoading || !subtotal, onClick: applyCoupon }, couponLoading ? "Checking..." : "Apply")
+            ),
+            couponError && h("div", { className: "danger" }, couponError),
+            h("div", { className: "cart-totals" },
+              h("div", null, h("span", null, "Subtotal"), h("strong", null, money(subtotal))),
+              coupon && h("div", null, h("span", null, `Discount (${coupon.code})`), h("strong", null, `- ${money(discount)}`)),
+              h("div", { className: "grand" }, h("span", null, "Total"), h("strong", null, money(total)))
+            )
+          )
+        ),
+        h(Panel, { title: "Delivery & Payment" },
+          h("div", { className: "checkout-form" },
+            h("label", { className: "half" }, "Full name",
+              h("input", { value: form.name, onChange: (event) => setForm({ ...form, name: event.target.value }) })
+            ),
+            h("label", { className: "half" }, "Phone number",
+              h("input", { value: form.phone, onChange: (event) => setForm({ ...form, phone: event.target.value }) })
+            ),
+            h("label", null, "Delivery address",
+              h("textarea", { rows: 2, value: form.address, onChange: (event) => setForm({ ...form, address: event.target.value }) })
+            ),
+            h("label", null, "Payment method",
+              h("div", { className: "payment-toggle" },
+                h("button", { type: "button", className: form.paymentMethod === "PREPAID" ? "active" : "", onClick: () => setForm({ ...form, paymentMethod: "PREPAID" }) }, "Card (Prepaid)"),
+                h("button", { type: "button", className: form.paymentMethod === "COD" ? "active" : "", onClick: () => setForm({ ...form, paymentMethod: "COD" }) }, "Cash on Delivery")
+              )
+            ),
+            h("button", { className: "checkout-btn", disabled: checkoutState.loading, onClick: placeOrder }, checkoutState.loading ? "Placing order..." : `Place order - ${money(total)}`)
+          ),
+          checkoutState.error && h("div", { className: "danger", style: { marginTop: "10px" } }, checkoutState.error),
+          checkoutState.result && h(OrderResultBanner, { result: checkoutState.result })
+        )
+      )
+    )
+  );
+}
+
+function OrderResultBanner({ result }) {
+  const decision = result.decision || "hold";
+  const copy = {
+    accept: ["Order confirmed!", "Payment captured. Your cake is being prepared."],
+    hold: ["Order under review", "Payment was not captured yet. Our team will contact you shortly."],
+    reject: ["Order blocked", "This order could not be placed."],
+  }[decision] || ["Order received", result.reason || ""];
+  return h("div", { className: `decision-banner ${decision}` },
+    h("h3", null, copy[0]),
+    h("p", null, copy[1]),
+    h("p", null, h("strong", null, "Order ID: "), result.order_id),
+    h("p", null, h("strong", null, "RuleLock reason: "), result.reason || "-")
   );
 }
 
@@ -355,7 +564,7 @@ function AttackSimulation() {
   return h("div", null,
     h("div", { className: "page-head" },
       h("div", null,
-        h("div", { className: "section-kicker" }, "DEMO ENVIRONMENT"),
+        h("div", { className: "section-kicker" }, "TESTING LAB"),
         h("h1", null, "Attack Simulation Lab"),
         h("p", null, "Select an abuse scenario and run it through the full RuleLock AI detection pipeline. All four components execute in sequence.")
       )
@@ -516,6 +725,7 @@ function App() {
   const route = useRoute();
   const health = useHealth();
   const page = useMemo(() => {
+    if (route === "cakely") return h(CakelyStore);
     if (route === "attack-simulation") return h(AttackSimulation);
     if (route === "audit-log") return h(AuditLog);
     if (route === "pipeline") return h(Pipeline, { health });
