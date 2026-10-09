@@ -1,15 +1,16 @@
 version: "3.9"
-# rule-engine, anomaly-detection, and enforcement-engine now run in-process
-# inside data-collection (see data-collection/rules.py, anomaly_scoring.py,
-# decision.py). The original service folders still exist with their own
-# Dockerfiles/tests, but they're no longer part of the deployed backend.
+# Only the deployed Flask backend is a service. The three root-level engine
+# directories are retained legacy copies and are not deployed.
 services:
   data-collection:
     build: ./data-collection
     ports:
       - "5001:5001"
     environment:
+      APP_ENV: ${APP_ENV:-production}
+      RULELOCK_ALLOW_NO_AUTH: ${RULELOCK_ALLOW_NO_AUTH:-0}
       SUPABASE_URL: ${SUPABASE_URL}
       SUPABASE_SECRET_KEY: ${SUPABASE_SECRET_KEY}
       RULELOCK_API_TOKEN: ${RULELOCK_API_TOKEN}
-      ANOMALY_THRESHOLD: ${ANOMALY_THRESHOLD:--0.06}
+      ANOMALY_HOLD_THRESHOLD: ${ANOMALY_HOLD_THRESHOLD:--0.06}
+      ANOMALY_REJECT_THRESHOLD: ${ANOMALY_REJECT_THRESHOLD:--0.1}

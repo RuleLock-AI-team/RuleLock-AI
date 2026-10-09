@@ -1,50 +1,26 @@
-# Cakely + RuleLock AI integration
+# Cakely + RuleLock contract v2
 
-This document is the handoff for the Cakely owner. RuleLock is called server-to-server before payment capture.
+RuleLock reviews server-calculated order data before payment capture. Cakely calls the backend from a server-side function and never exposes the bearer token to a browser.
 
-## RuleLock endpoint
+## Request
 
-```text
-POST https://YOUR_RULELOCK_HOST/review-order
-Authorization: Bearer YOUR_RULELOCK_API_TOKEN
+```http
+POST /review-order
+Authorization: Bearer <RULELOCK_API_TOKEN>
 Content-Type: application/json
 ```
 
-The endpoint returns one of these decisions:
-
-- `accept`: capture the payment
-- `hold`: do not capture; send the order to review or ask for another payment method
-- `reject`: do not capture; block the order or discount
-
-It also returns fields Cakely can use directly:
-
-```json
-{
-  "decision": "accept",
-  "payment_action": "capture_payment",
-  "cakely_order_status": "approved_for_payment",
-  "reason": "order passed RuleLock checks"
-}
-```
-
-Use `payment_action` as the payment instruction and store
-`cakely_order_status` with the Cakely order. `approved_for_payment` means Cakely
-may capture payment server-side, then mark the order paid only after the capture
-succeeds.
-
-## Request body
-
-`order_id` must currently be numeric because RuleLock writes it to the shared `transaction_events.order_id` column.
+`order_id` is a numeric, stable Cakely order identifier. The idempotency key is `(event_type, order_id)`: retries of a live order return the stored `RULELOCK_REVIEW`; dashboard lab requests set `simulation: true`, use `RULELOCK_SIMULATION`, and do not count in dashboard KPIs.
 
 ```json
 {
   "order_id": 1001,
+  "order_reference": "CK-202610030001",
   "account_id": "customer-42",
   "user_id": 42,
   "session_id": "checkout-session-abc",
   "payment_method": "PREPAID",
-  "sku": "sku-1",
-  "quantity": 1,
+  "items": [{"sku":"sku-1","quantity":1,"unit_price":2500}],
   "coupons_applied": ["WELCOME10"],
   "discount_value": 250,
   "subtotal": 2500,
@@ -61,127 +37,24 @@ succeeds.
 }
 ```
 
-Cakely should send the real server-calculated prices and totals. Do not trust the values posted by the browser.
+Prices, quantities, coupons, and totals must come from Cakely's server-side order and catalog state. Do not trust values from the browser. `order_reference` is an optional human-readable display code; `account_id` is retained in the audit row, so use a pseudonymous identifier where possible.
 
-## Cakely checkout flow
+## Response and payment handling
 
-1. Create the Cakely order as `pending`.
-2. Read the owner setting `rulelock_enabled` from the database.
-3. If it is `false`, capture payment normally and log `rulelock_enabled=false`.
-4. If it is `true`, call `/review-order` from a Netlify Function or server-side endpoint.
-5. Capture payment only when the response is `decision=accept`.
-6. For `hold` or `reject`, do not capture payment.
-7. Update the Cakely order status and log the RuleLock response.
+The response contains `decision`, `reason`, `customer_message`, `payment_action`, `rule_result`, `anomaly_result`, and `enforcement_result`. Decisions are `accept`, `hold`, `reject`, or `void_discount`. Capture payment only for `accept`; for all other decisions, do not capture. Treat timeout, invalid response, and non-2xx responses as `hold`.
 
-Pseudocode:
+1. Create a pending Cakely order with trusted server-calculated values.
+2. Call RuleLock before capturing payment.
+3. Capture only after `decision=accept`; then mark the order paid after capture succeeds.
+4. For `hold`, `reject`, or `void_discount`, follow the returned action and retain the review response on the Cakely order.
+5. Log Cakely-side overrides as `RULELOCK_OVERRIDE` in `transaction_events`; the dashboard counts those as manual overrides.
 
-```js
-const settings = await getPlatformSettings();
+## Dashboard and simulations
 
-if (!settings.rulelock_enabled) {
-  await capturePayment(order.payment_id);
-  await markOrderPaid(order.id, { rulelock_enabled: false });
-  return { status: "paid" };
-}
+The Netlify dashboard requires `DASHBOARD_USER`, `DASHBOARD_PASSWORD`, and `DASHBOARD_SESSION_SECRET`. It authenticates with a short-lived HttpOnly cookie. The dashboard proxy only exposes summary, audit, readiness, pipeline information, and `POST /review-order` with `simulation:true`; it cannot access `/settings/rulelock`.
 
-const review = await fetch(`${RULELOCK_API_URL}/review-order`, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${RULELOCK_API_TOKEN}`
-  },
-  body: JSON.stringify(orderForRuleLock)
-}).then((response) => response.json());
+## Storage and retention
 
-if (review.decision !== "accept") {
-  await updateOrder(order.id, {
-    status: review.cakely_order_status,
-    rulelock_review: review
-  });
-  return { status: review.decision, reason: review.reason };
-}
+RuleLock stores each review in `transaction_events` and inserts a corresponding immutable row in `rulelock_audit_log`. Apply the SQL files under `data-collection/migrations/` manually to the shared Supabase project. The audit table rejects UPDATE and DELETE. The purge script removes expired `transaction_events` rows after an explicit `--execute`; immutable audit rows remain as a minimal decision record, so do not put customer names, contact information, or raw request payloads there.
 
-await capturePayment(order.payment_id);
-await markOrderPaid(order.id, {
-  rulelock_enabled: true,
-  rulelock_decision: review.decision
-});
-return { status: "paid" };
-```
-
-## Owner toggle
-
-The toggle belongs in the Cakely owner dashboard and must be saved server-side. A browser-only toggle is not sufficient.
-
-Suggested table:
-
-```sql
-create table if not exists platform_settings (
-  id bigint generated by default as identity primary key,
-  rulelock_enabled boolean not null default false,
-  updated_at timestamptz not null default now()
-);
-
-insert into platform_settings (rulelock_enabled)
-values (false);
-```
-
-Only an authenticated Cakely owner/admin may update this setting.
-
-RuleLock also exposes protected helper endpoints for the Cakely owner backend:
-
-```text
-GET  https://YOUR_RULELOCK_HOST/settings/rulelock
-POST https://YOUR_RULELOCK_HOST/settings/rulelock
-Authorization: Bearer YOUR_RULELOCK_API_TOKEN
-Content-Type: application/json
-```
-
-Body for updates:
-
-```json
-{ "rulelock_enabled": true }
-```
-
-When Cakely calls `/review-order`, RuleLock reads the shared
-`platform_settings.rulelock_enabled` value when available. Cakely may also send
-`"rulelock_enabled": false` in the review payload to bypass the pipeline for
-that order; RuleLock will return `decision=accept`, `payment_action=capture_payment`,
-and `rulelock_enabled=false`.
-
-## Netlify environment variables
-
-Configure these in Netlify, not in browser JavaScript:
-
-```text
-RULELOCK_API_URL=https://YOUR_RULELOCK_HOST
-RULELOCK_API_TOKEN=the-same-random-token-configured-in-rulelock
-SUPABASE_URL=https://idlmmvmxbdebpurovkee.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=server-only-key
-PAYMENT_SECRET_KEY=server-only-key
-```
-
-RuleLock configuration:
-
-```text
-RULELOCK_API_TOKEN=the-same-random-token
-```
-
-The token should be long, random, and different from the Supabase keys. Never expose it in a Netlify client bundle.
-
-## Shared Supabase data
-
-Both applications should use the same Supabase project. RuleLock writes review results as `RULELOCK_REVIEW` events into `transaction_events`, including:
-
-- `decision`
-- `reason`
-- `rulelock_enabled`
-- `rule_result`
-- `anomaly_result`
-- `enforcement_result`
-
-Cakely should store the same review response on its order record for customer support and owner dashboards.
-
-## Important payment rule
-
-A missing RuleLock response, timeout, invalid response, or HTTP 503 must be treated as `hold`, never as approval. This prevents a RuleLock outage from silently bypassing protection.
+Set `RULELOCK_API_TOKEN` on the backend and the same value as a server-side secret in Cakely. Never put it in frontend JavaScript.

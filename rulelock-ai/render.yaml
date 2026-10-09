@@ -6,7 +6,7 @@ services:
     plan: free
     rootDir: rulelock-ai/data-collection
     dockerfilePath: Dockerfile
-    healthCheckPath: /health
+    healthCheckPath: /ready
     autoDeploy: true
     envVars:
       - key: SUPABASE_URL
@@ -17,5 +17,7 @@ services:
         sync: false
       - key: CAKELY_ORIGINS
         value: https://charukagimhan2020-hub.github.io,https://nimble-blancmange-3cb45c.netlify.app
-      - key: ANOMALY_THRESHOLD
+      - key: ANOMALY_HOLD_THRESHOLD
         value: "-0.06"
+      - key: ANOMALY_REJECT_THRESHOLD
+        value: "-0.1"

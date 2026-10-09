@@ -1,0 +1,19 @@
+# Secrets and local credentials
+.env
+**/.env
+.rulelock_token.tmp
+
+# Local Python and test artifacts
+__pycache__/
+**/__pycache__/
+.pytest_cache/
+**/.pytest_cache/
+*.py[cod]
+*.joblib
+.venv/
+venv/
+
+# Repository and editor metadata
+.git/
+.vscode/
+.idea/

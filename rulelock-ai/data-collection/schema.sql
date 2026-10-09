@@ -1,6 +1,5 @@
 -- The Cakely/Supabase schema is the source of truth for this component.
--- No tables are created here. The service writes to the existing:
---   transaction_events(event_id, event_type, user_id, order_id, metadata)
---   products(id, name, base_price, active)
--- No audit_log or rulelock_* tables are required by this component.
--- Configure SUPABASE_URL and SUPABASE_SECRET_KEY in data-collection/.env.
+-- RuleLock reads the existing products table and writes transaction_events.
+-- Apply migrations/2026-10-03_rulelock_review_idempotency.sql and
+-- migrations/2026-10-03_rulelock_audit_log.sql manually for review uniqueness
+-- and immutable audit records. Configure Supabase secrets in the environment.

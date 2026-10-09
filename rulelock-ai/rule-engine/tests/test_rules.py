@@ -46,7 +46,7 @@ def test_cod_order_value_fails_for_unverified_large_cod_order():
     assert "unverified" in result.reason.lower()
 
 
-def test_cod_refusal_rate_fails_when_threshold_is_exceeded():
+def test_cod_refusal_rate_fails_when_threshold_is_exceeded_from_fixture():
     result = check_cod_refusal_rate(10, 6)
     assert not result.passed
     assert "refusal" in result.reason.lower()

@@ -41,8 +41,8 @@ Component 3 is the dedicated ML component, but the model doesn't work in isolati
 
 ## Technologies
 
-- **Frontend:** React / HTML, CSS, JavaScript (demo storefront)
-- **Backend:** Python (Flask or FastAPI)
+- **Frontend:** React dashboard and simulation lab (static Netlify site)
+- **Backend:** Python / Flask
 - **Database:** Existing Cakely Supabase project
 - **Machine Learning:** scikit-learn - Isolation Forest / One-Class SVM
 - **Security Testing:** OWASP testing methodology, Burp Suite Community Edition
@@ -90,13 +90,16 @@ docker-compose up --build
 
 Each component also runs and tests independently - see the README inside its own folder.
 
+The deployed app is an authenticated operations dashboard and simulation lab; it does not include the legacy demo storefront. Cakely integration details and the v2 request/response contract are in [docs/cakely-rulelock-integration.md](docs/cakely-rulelock-integration.md). Threat-model and retention status are in [docs/architecture.md](docs/architecture.md).
+
+Production backend configuration requires `RULELOCK_API_TOKEN`, `SUPABASE_URL`, `SUPABASE_SECRET_KEY`, and the model file. Configure the Netlify function with `DASHBOARD_USER`, `DASHBOARD_PASSWORD`, `DASHBOARD_SESSION_SECRET`, `RULELOCK_API_URL`, and `RULELOCK_API_TOKEN`. The dashboard cookie lasts four hours. Set `RETENTION_DAYS` for the transaction event retention window; the purge script is a dry run unless passed `--execute`. Immutable minimal audit rows are retained separately.
+
 ## Deploying to Render
 
-This repository includes `rulelock-ai/render.yaml` (the repository is nested one
-directory below the GitHub root), which defines all four backend services with
-the correct Docker roots, health checks, and private service URLs. In Render, choose
-**New + -> Blueprint**, select this repository and the `main` branch, then apply the
-Blueprint. Render will ask for the three secret values used by `rulelock-data-collection`:
+This repository includes `render.yaml` for the deployed data-collection backend.
+In Render, choose **New + -> Blueprint**, select this repository and the `main`
+branch, then apply the Blueprint. Render will ask for the secret values used by
+`rulelock-data-collection`:
 
 ```text
 SUPABASE_URL
@@ -104,9 +107,8 @@ SUPABASE_SECRET_KEY
 RULELOCK_API_TOKEN
 ```
 
-The Blueprint keeps all services in Singapore and uses Render's internal service
-network. The generated public URL for `rulelock-data-collection` is the URL Cakely
-should call at `/review-order`.
+The generated public URL for `rulelock-data-collection` is the URL Cakely should
+call at `/review-order`.
 
 ## License
 

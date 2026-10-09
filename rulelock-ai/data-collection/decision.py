@@ -1,52 +1,43 @@
-"""
-RuleLock AI — Automated Enforcement Engine: decision logic
-Owner: Mishen
-
-Merged in from the standalone enforcement-engine service.
-"""
+"""Enforcement policy translating detections into contract decisions."""
 import os
 
 from actions import void_discount, hold_cod_order, rate_limit_account
 
-# IsolationForest decision_function: below this = high-confidence abuse.
-# MUST match anomaly_scoring.py's own ANOMALY_THRESHOLD (the value Nihara
-# calibrated with evaluate.py's precision/recall analysis — -0.06, not an
-# independent guess here). Both read the same env var so they can't
-# silently disagree on what counts as anomalous.
-ANOMALY_THRESHOLD = float(os.environ.get("ANOMALY_THRESHOLD", "-0.06"))
+ANOMALY_HOLD_THRESHOLD = float(os.environ.get("ANOMALY_HOLD_THRESHOLD", "-0.06"))
+ANOMALY_REJECT_THRESHOLD = float(os.environ.get("ANOMALY_REJECT_THRESHOLD", "-0.1"))
 
 RULE_ACTION_MAP = {
     "coupon_usage": "void_discount",
     "discount_range": "void_discount",
-    "quantity_ceiling": "void_discount",
+    "coupon_velocity": "void_discount",
     "minimum_purchase": "void_discount",
-    "cod_order_value": "hold_cod_order",
-    "cod_refusal_rate": "hold_cod_order",
+    "quantity_ceiling": "reject",
+    "price_mismatch": "reject",
+    "cod_order_value": "hold",
+    "cod_abuse": "hold",
+    "cod_abuse_severe": "reject",
 }
 
 
-def _run_rule_action(action_name: str, order_id: str) -> dict:
-    if action_name == "hold_cod_order":
-        return hold_cod_order(order_id)
-    return void_discount(order_id)
-
-
-def decide(order_id: str, account_id: str, rule_passed: bool, rule_reason: str,
-           anomaly_score: float, payment_method: str, rule_code: str = None) -> dict:
+def decide(order_id, account_id, rule_passed, rule_reason, anomaly_score, payment_method, rule_code=None, violations=None):
     if not rule_passed:
-        action_name = RULE_ACTION_MAP.get(rule_code, "void_discount")
-        return {
-            "decision": action_name,
-            "reason": rule_reason,
-            "rule_code": rule_code,
-            **_run_rule_action(action_name, order_id),
-        }
+        if violations:
+            severity = {"reject": 3, "hold": 2, "void_discount": 1}
+            rule_code = max(violations, key=lambda violation: severity.get(RULE_ACTION_MAP.get(violation.get("code"), "hold"), 2)).get("code", rule_code)
+        action = RULE_ACTION_MAP.get(rule_code, "hold")
+        if action == "void_discount":
+            execution = void_discount(order_id)
+        elif action == "reject":
+            execution = {"action": "reject_order"}
+        else:
+            execution = hold_cod_order(order_id)
+        return {"decision": action, "reason": rule_reason, "rule_code": rule_code, **execution}
 
-    if anomaly_score < ANOMALY_THRESHOLD:
-        if payment_method == "COD":
-            return {"decision": "hold_cod_order", "reason": "anomaly score below threshold",
-                     **hold_cod_order(order_id)}
-        return {"decision": "rate_limit_account", "reason": "anomaly score below threshold",
+    if anomaly_score < ANOMALY_REJECT_THRESHOLD:
+        return {"decision": "reject", "reason": "anomaly score indicates elevated risk",
+                "account_action": {"type": "rate_limit", "minutes": 30},
                 **rate_limit_account(account_id)}
-
-    return {"decision": "none", "reason": "passed all checks"}
+    if anomaly_score < ANOMALY_HOLD_THRESHOLD:
+        return {"decision": "hold", "reason": "anomaly score requires review",
+                **hold_cod_order(order_id)}
+    return {"decision": "accept", "reason": "passed all checks", "action": "none"}

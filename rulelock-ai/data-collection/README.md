@@ -1,52 +1,32 @@
-# RuleLock AI - Transaction Monitoring and Data Collection
+# RuleLock AI backend
 
-Owner: Charuka. This service runs on port `5001`, serves the existing demo
-storefront, records sessions and events in the existing Supabase database, and forwards checkout
-data to the rule and anomaly services when their URLs are configured.
+The deployed service is the Flask app in this directory. Rule checks, anomaly scoring, and enforcement run in-process. The sibling `rule-engine/`, `anomaly-detection/`, and `enforcement-engine/` folders are legacy implementations and are not deployed.
 
-## Setup
+## Contract
 
-```bash
-python -m venv venv
-venv\Scripts\activate
-pip install -r requirements.txt
-copy .env.example .env
-python app.py
-```
+Cakely calls `POST /review-order` with `Authorization: Bearer <RULELOCK_API_TOKEN>` and server-calculated order values. `order_id` must be numeric and stable. Responses use `accept`, `hold`, `reject`, or `void_discount`; Cakely captures payment only for `accept` and treats timeout or error as `hold`.
 
-This component does not create or migrate a database. It connects to the
-existing Cakely Supabase project and writes to its existing `products` and
-`transaction_events` tables using the server-only `SUPABASE_SECRET_KEY`.
-It does not use or create a separate PostgreSQL database or an `audit_log`
-table.
+Normal requests write `RULELOCK_REVIEW`; requests with `simulation:true` write `RULELOCK_SIMULATION`. Both are idempotent by event type and order ID, but simulations are excluded from dashboard metrics. A PostgREST database function writes each transaction event and its minimal immutable `rulelock_audit_log` row atomically. Cakely owns checkout and `RULELOCK_OVERRIDE` events.
 
-## Endpoints
+## Security and operations
 
-| Method | Path | Purpose |
-| --- | --- | --- |
-| GET | `/` | Demo storefront frontend |
-| GET | `/health` | Liveness check |
-| GET | `/browse` | List demo products |
-| POST | `/cart` | Calculate a cart, and log it when `session_id` is supplied |
-| POST | `/apply-coupon` | Apply a coupon, and log the attempt when `session_id` is supplied |
-| POST | `/checkout` | Log checkout, call rule/anomaly services, and return their results |
-| POST | `/review-order` | Secured Cakely pre-payment review endpoint |
-| GET/POST | `/settings/rulelock` | Secured owner-toggle endpoint backed by Cakely `platform_settings` |
+Production startup requires `RULELOCK_API_TOKEN`. `RULELOCK_ALLOW_NO_AUTH=1` is only for local development. The dashboard proxy requires `DASHBOARD_USER`, `DASHBOARD_PASSWORD`, and `DASHBOARD_SESSION_SECRET` in Netlify and keeps the backend token server-side.
 
-`RULE_ENGINE_URL` and `ANOMALY_ENGINE_URL` are optional. When unset or
-unreachable, checkout uses local pass-through stubs so the service remains
-usable during local development.
+`/health` is fast liveness. `/ready` checks that the model is loaded and Supabase is reachable. `/pipeline/info` reports the active model thresholds, configured rule thresholds, and model feature names.
 
-`/review-order` returns a normalized Cakely handoff:
+## Retention and audit privacy
 
-```json
-{
-  "decision": "accept",
-  "payment_action": "capture_payment",
-  "cakely_order_status": "approved_for_payment"
-}
-```
+`scripts/purge_old_events.py` uses `RETENTION_DAYS` (default `365`), reports the expired transaction-event count by default, and only deletes with `--execute`. Apply the database migrations manually. `rulelock_audit_log` is insert-only and is excluded from event purging; keep its rows minimal and do not store names, contact information, or raw request payloads. See [docs/architecture.md](../docs/architecture.md) for the retention policy.
 
-For `hold`, Cakely should not capture payment and should show the order as
-`review`. For `reject`, Cakely should not capture payment and should show the
-order as `blocked`.
+## Migrations
+
+Apply these SQL files manually to the shared Supabase database, in order:
+
+1. `migrations/2026-10-03_rulelock_review_idempotency.sql` enforces one live review and one simulation row per order.
+2. `migrations/2026-10-03_rulelock_audit_log.sql` creates the immutable audit table and its indexes/triggers.
+
+This repository change does not run SQL against Supabase. Configure `SUPABASE_URL` and `SUPABASE_SECRET_KEY` in the backend environment.
+
+## Model
+
+Model inputs are clipped to the training ranges in `features.py`; training and evaluation are synthetic and circular, not evidence of real-world detection accuracy. Run `python train_model.py`, `python evaluate.py`, or `pytest` from this directory as needed.

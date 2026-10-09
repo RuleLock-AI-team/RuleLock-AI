@@ -1,5 +1,18 @@
 [build]
-  publish = "."
+  command = "node build-static.js"
+  publish = "public"
+
+[[redirects]]
+  from = "/dev-server.js"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/netlify/functions/*"
+  to = "/404.html"
+  status = 404
+  force = true
 
 [functions]
   directory = "netlify/functions"
