@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - "frontend/**"
+      - "rulelock-ai/frontend/**"
       - ".github/workflows/deploy-pages.yml"
   workflow_dispatch:
 
@@ -25,13 +25,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build static frontend
-        working-directory: frontend
+        working-directory: rulelock-ai/frontend
         run: node build-static.js
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: frontend/public
+          path: rulelock-ai/frontend/public
 
   deploy:
     needs: build
