@@ -43,7 +43,7 @@ Component 3 is the dedicated ML component, but the model doesn't work in isolati
 
 ## Technologies
 
-- **Frontend:** React dashboard and simulation lab (static Netlify site)
+- **Frontend:** React dashboard and simulation lab (static GitHub Pages site)
 - **Backend:** Python / Flask
 - **Database:** Existing Cakely Supabase project
 - **Machine Learning:** scikit-learn - Isolation Forest / One-Class SVM

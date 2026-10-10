@@ -4,9 +4,13 @@ import logging
 import hmac
 import re
 import uuid
+import base64
+import hashlib
+import json
+import time
 from requests import RequestException
 
-from config import RULELOCK_ALLOW_NO_AUTH, RULELOCK_API_TOKEN
+from config import DASHBOARD_SESSION_SECRET, RULELOCK_ALLOW_NO_AUTH, RULELOCK_API_TOKEN
 from db import (
     get_device_events,
     get_phone_events,
@@ -87,7 +91,34 @@ def _authorized_request():
         return RULELOCK_ALLOW_NO_AUTH
     supplied = request.headers.get("Authorization", "")
     scheme, _, token = supplied.partition(" ")
-    return scheme.lower() == "bearer" and hmac.compare_digest(token, RULELOCK_API_TOKEN)
+    if scheme.lower() == "bearer" and hmac.compare_digest(token, RULELOCK_API_TOKEN):
+        return True
+    return _valid_dashboard_session()
+
+
+def dashboard_cookie():
+    payload = base64.urlsafe_b64encode(
+        json.dumps({"expires_at": int(time.time()) + 4 * 60 * 60}, separators=(",", ":")).encode()
+    ).decode().rstrip("=")
+    signature = hmac.new(DASHBOARD_SESSION_SECRET.encode(), payload.encode(), hashlib.sha256).hexdigest()
+    return f"{payload}.{signature}"
+
+
+def _valid_dashboard_session():
+    if not DASHBOARD_SESSION_SECRET:
+        return False
+    value = request.cookies.get("rulelock_dashboard_session", "")
+    payload, separator, signature = value.rpartition(".")
+    if not separator or not hmac.compare_digest(
+        signature,
+        hmac.new(DASHBOARD_SESSION_SECRET.encode(), payload.encode(), hashlib.sha256).hexdigest(),
+    ):
+        return False
+    try:
+        padded = payload + "=" * (-len(payload) % 4)
+        return json.loads(base64.urlsafe_b64decode(padded).decode())["expires_at"] > int(time.time())
+    except (ValueError, KeyError, TypeError, json.JSONDecodeError):
+        return False
 
 
 def _as_bool(value):

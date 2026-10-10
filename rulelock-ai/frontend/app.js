@@ -8,11 +8,8 @@ const runtimeConfig = window.RULELOCK_CONFIG || {};
 // health checks point at the same backend by default.
 const CONFIG = {
   dataUrl: runtimeConfig.DATA_COLLECTION_URL || window.RULELOCK_API_BASE || viteEnv.VITE_DATA_COLLECTION_URL || "https://rulelock-data-collection.onrender.com",
-  proxyUrl: runtimeConfig.RULELOCK_PROXY_URL || "/.netlify/functions/rulelock",
 };
-CONFIG.ruleUrl = runtimeConfig.RULE_ENGINE_URL || viteEnv.VITE_RULE_ENGINE_URL || CONFIG.dataUrl;
-CONFIG.anomalyUrl = runtimeConfig.ANOMALY_URL || viteEnv.VITE_ANOMALY_URL || CONFIG.dataUrl;
-CONFIG.enforcementUrl = runtimeConfig.ENFORCEMENT_URL || viteEnv.VITE_ENFORCEMENT_URL || CONFIG.dataUrl;
+CONFIG.proxyUrl = CONFIG.dataUrl;
 
 const ROUTES = [
   { id: "dashboard", label: "Dashboard", path: "/dashboard" },
@@ -27,7 +24,7 @@ const nowOrderId = () => Number(String(Date.now()).slice(-9));
 const nowStamp = () => new Date().toLocaleString("en-LK", { hour12: false });
 
 async function jsonFetch(url, options = {}) {
-  const response = await fetch(url, { credentials: "same-origin", ...options });
+  const response = await fetch(url, { credentials: "include", ...options });
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
     const error = new Error(data.error || `HTTP ${response.status}`);
@@ -39,11 +36,11 @@ async function jsonFetch(url, options = {}) {
 }
 
 async function dataGet(path) {
-  return jsonFetch(`${CONFIG.proxyUrl}?path=${encodeURIComponent(path)}`);
+  return jsonFetch(`${CONFIG.proxyUrl}${path}`);
 }
 
 async function dataPost(path, payload) {
-  return jsonFetch(`${CONFIG.proxyUrl}?path=${encodeURIComponent(path)}`, {
+  return jsonFetch(`${CONFIG.proxyUrl}${path}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -74,7 +71,7 @@ function useHealth(authenticated) {
   const [health, setHealth] = useState({});
   useEffect(() => {
     if (!authenticated) { setHealth({}); return; }
-    fetch(`${CONFIG.proxyUrl}?path=${encodeURIComponent("/ready")}`, { credentials: "same-origin", cache: "no-store" })
+    fetch(`${CONFIG.proxyUrl}/ready`, { credentials: "include", cache: "no-store" })
       .then(async (response) => {
         const data = await response.json().catch(() => ({}));
         if (response.status === 401) window.dispatchEvent(new Event("rulelock-unauthorized"));

@@ -1,10 +1,7 @@
-// Local dev server: serves the static frontend AND runs the same Netlify
-// function used in production, so /.netlify/functions/rulelock works on localhost
-// without needing the Netlify CLI installed.
+// Local development server for the static frontend.
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
-const { handler } = require("./netlify/functions/rulelock.js");
 
 const PORT = process.env.PORT || 8080;
 const ROOT = __dirname;
@@ -45,31 +42,7 @@ function serveStatic(req, res) {
   });
 }
 
-async function readBody(req) {
-  const chunks = [];
-  for await (const chunk of req) chunks.push(chunk);
-  return chunks.length ? Buffer.concat(chunks).toString("utf8") : undefined;
-}
-
-const server = http.createServer(async (req, res) => {
-  if (req.url.startsWith("/.netlify/functions/rulelock")) {
-    const [, query = ""] = req.url.split("?");
-    const event = {
-      httpMethod: req.method,
-      queryStringParameters: Object.fromEntries(new URLSearchParams(query)),
-      body: await readBody(req),
-      headers: req.headers,
-    };
-    try {
-      const result = await handler(event);
-      res.writeHead(result.statusCode, result.headers || {});
-      res.end(result.body);
-    } catch (error) {
-      res.writeHead(500, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ error: error.message }));
-    }
-    return;
-  }
+const server = http.createServer((req, res) => {
   serveStatic(req, res);
 });
 
@@ -80,4 +53,3 @@ server.listen(PORT, () => {
     console.log("Warning: dashboard proxy is unavailable until its backend token and dashboard login settings are configured.");
   }
 });
-

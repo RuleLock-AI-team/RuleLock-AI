@@ -10,7 +10,7 @@ Normal requests write `RULELOCK_REVIEW`; requests with `simulation:true` write `
 
 ## Security and operations
 
-Production startup requires `RULELOCK_API_TOKEN`. `RULELOCK_ALLOW_NO_AUTH=1` is only for local development. The dashboard proxy requires `DASHBOARD_USER`, `DASHBOARD_PASSWORD`, and `DASHBOARD_SESSION_SECRET` in Netlify and keeps the backend token server-side.
+Production startup requires `RULELOCK_API_TOKEN`. `RULELOCK_ALLOW_NO_AUTH=1` is only for local development. The dashboard requires `DASHBOARD_USER`, `DASHBOARD_PASSWORD`, and `DASHBOARD_SESSION_SECRET` in Render and keeps the backend token server-side.
 
 `/health` is fast liveness. `/ready` checks that the model is loaded and Supabase is reachable. `/pipeline/info` reports the active model thresholds, configured rule thresholds, and model feature names.
 
