@@ -2,6 +2,8 @@
 
 ### AI-Powered Business Logic Abuse Detection Platform for Secure E-Commerce Transactions
 
+**Live frontend:** [RuleLock AI on GitHub Pages](https://rulelock-ai-team.github.io/RuleLock-AI/)
+
 ## What This Project Is About
 
 Sri Lanka CERT has reported a sharp rise in business email compromise and financial cyber-fraud incidents through 2025-2026, with weak governance and low security maturity flagged as contributing factors - including a documented 2026 incident affecting the banking and e-commerce sector. The pattern behind a lot of this seems consistent: local e-commerce and fintech businesses prioritize speed to market over security, and the gaps compound over time.
