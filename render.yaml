@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: rulelock-data-collection
+    runtime: docker
+    region: singapore
+    plan: free
+    rootDir: rulelock-ai/data-collection
+    dockerfilePath: Dockerfile
+    healthCheckPath: /ready
+    autoDeploy: true
+    envVars:
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SECRET_KEY
+        sync: false
+      - key: RULELOCK_API_TOKEN
+        sync: false
+      - key: DASHBOARD_USER
+        sync: false
+      - key: DASHBOARD_PASSWORD
+        sync: false
+      - key: DASHBOARD_SESSION_SECRET
+        sync: false
+      - key: CAKELY_ORIGINS
+        value: https://rulelock-ai-team.github.io
+      - key: ANOMALY_HOLD_THRESHOLD
+        value: "-0.06"
+      - key: ANOMALY_REJECT_THRESHOLD
+        value: "-0.1"
