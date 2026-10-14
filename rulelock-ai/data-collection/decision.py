@@ -29,6 +29,9 @@ def decide(order_id, account_id, rule_passed, rule_reason, anomaly_score, paymen
             execution = void_discount(order_id)
         elif action == "reject":
             execution = {"action": "reject_order"}
+            if rule_code == "cod_abuse_severe":
+                execution.update(rate_limit_account(account_id))
+                execution["account_action"] = {"type": "rate_limit", "minutes": 60}
         else:
             execution = hold_cod_order(order_id)
         return {"decision": action, "reason": rule_reason, "rule_code": rule_code, **execution}

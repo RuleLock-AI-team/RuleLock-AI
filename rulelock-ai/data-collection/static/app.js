@@ -174,7 +174,7 @@ function Dashboard({ health }) {
               h("span", null,
                 h("strong", null, item.order_reference || `Order ${item.order_id}`),
                 item.order_id != null && h("small", { className: "secondary-order-id" }, `#${item.order_id}`),
-                ` · ${item.account_username || item.account_id || ""}${item.description ? ` — ${item.description}` : ""}${item.total != null ? ` (${money(item.total)})` : ""}`)
+                ` · ${item.account_username || item.account_id || ""}${item.description ? ` - ${item.description}` : ""}${item.total != null ? ` (${money(item.total)})` : ""}`)
             )
           ) : h("div", { className: "empty-state" }, "No RuleLock reviews in the last 24 hours.")
         )
