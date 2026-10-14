@@ -47,6 +47,17 @@ elif IS_PRODUCTION:
     raise RuntimeError("anomaly model is required in production")
 
 
+@app.get("/")
+def index():
+    return jsonify(
+        service="rulelock-ai-detection-engine",
+        status="operational",
+        health_check="/health",
+        readiness_check="/ready",
+        review_endpoint="/review-order"
+    ), 200
+
+
 @app.get("/health")
 def health():
     return jsonify(status="ok"), 200
