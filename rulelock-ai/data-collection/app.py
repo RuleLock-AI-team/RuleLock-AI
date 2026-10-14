@@ -9,10 +9,51 @@ from db import check_supabase
 from anomaly_scoring import MODEL_PATH, _get_model, is_model_loaded
 from routes.events import bp as events_bp
 
-app = Flask(__name__, static_folder=None)
+app = Flask(__name__, static_folder="static", static_url_path="/static")
 logger = logging.getLogger(__name__)
 CORS(app, origins=CAKELY_ORIGINS, supports_credentials=True)
 app.register_blueprint(events_bp)
+
+
+@app.get("/")
+@app.get("/dashboard")
+@app.get("/attack-simulation")
+@app.get("/audit-log")
+@app.get("/pipeline")
+def serve_dashboard():
+    static_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
+    index_path = os.path.join(static_dir, "index.html")
+    if os.path.isfile(index_path):
+        from flask import send_from_directory
+        return send_from_directory(static_dir, "index.html")
+    return jsonify(
+        service="rulelock-ai-detection-engine",
+        status="operational",
+        health_check="/health",
+        readiness_check="/ready",
+        review_endpoint="/review-order"
+    ), 200
+
+
+@app.get("/<string:page>.html")
+def serve_html_pages(page):
+    static_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
+    filename = f"{page}.html"
+    target_file = os.path.join(static_dir, filename)
+    if os.path.isfile(target_file):
+        from flask import send_from_directory
+        return send_from_directory(static_dir, filename)
+    return jsonify(error="not found"), 404
+
+
+@app.get("/app.js")
+@app.get("/styles.css")
+@app.get("/style.css")
+def serve_static_assets():
+    static_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
+    from flask import send_from_directory
+    filename = request.path.lstrip("/")
+    return send_from_directory(static_dir, filename)
 
 
 @app.post("/login")
@@ -47,15 +88,6 @@ elif IS_PRODUCTION:
     raise RuntimeError("anomaly model is required in production")
 
 
-@app.get("/")
-def index():
-    return jsonify(
-        service="rulelock-ai-detection-engine",
-        status="operational",
-        health_check="/health",
-        readiness_check="/ready",
-        review_endpoint="/review-order"
-    ), 200
 
 
 @app.get("/health")
