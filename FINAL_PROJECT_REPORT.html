@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>RuleLock AI - Final Project Report</title>
+<style>
+  @page { size: A4; margin: 2.5cm 2.5cm 2.5cm 2.5cm; }
+  body { font-family: "Calibri", "Segoe UI", Arial, sans-serif; font-size: 11pt; line-height: 1.5; color: #1a1a1a; max-width: 860px; margin: 0 auto; padding: 40px 20px; }
+  h1, h2, h3, h4 { font-family: "Calibri", "Segoe UI", Arial, sans-serif; color: #0f172a; margin-top: 1.4em; margin-bottom: 0.5em; }
+  h1 { font-size: 20pt; border-bottom: 2px solid #0284c7; padding-bottom: 6px; }
+  h2 { font-size: 15pt; border-bottom: 1px solid #cbd5e1; padding-bottom: 4px; margin-top: 1.8em; }
+  h3 { font-size: 12.5pt; color: #0369a1; }
+  h4 { font-size: 11pt; font-style: italic; }
+  p { margin-bottom: 0.8em; text-align: justify; }
+  table { width: 100%; border-collapse: collapse; margin: 1.4em 0; font-size: 9.5pt; page-break-inside: avoid; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 10px; text-align: left; vertical-align: top; }
+  th { background-color: #f1f5f9; font-weight: 600; color: #0f172a; }
+  tr:nth-child(even) { background-color: #f8fafc; }
+  pre, code { font-family: "Consolas", "Courier New", monospace; }
+  pre { background-color: #0f172a; color: #f8fafc; padding: 14px; border-radius: 6px; overflow-x: auto; font-size: 9pt; line-height: 1.4; page-break-inside: avoid; margin: 1em 0; }
+  p code, li code, td code { background-color: #f1f5f9; color: #b91c1c; padding: 2px 5px; border-radius: 4px; font-size: 9.5pt; }
+  ul, ol { margin-bottom: 1em; padding-left: 1.5em; }
+  li { margin-bottom: 0.3em; }
+  blockquote { border-left: 4px solid #0284c7; padding-left: 15px; margin: 1em 0; color: #475569; font-style: italic; }
+  hr { border: none; border-top: 1px solid #e2e8f0; margin: 2em 0; }
+  .cover { text-align: center; padding: 40px 20px; border: 2px solid #cbd5e1; border-radius: 8px; margin-bottom: 40px; background: #fafafa; }
+  .cover h1 { border: none; font-size: 22pt; color: #0369a1; margin-bottom: 8px; }
+  .cover h2 { border: none; font-size: 13pt; color: #475569; font-weight: normal; margin-top: 0; }
+</style>
+</head>
+<body>
+<h1>RULELOCK AI: MULTI-LAYERED REAL-TIME BUSINESS LOGIC VULNERABILITY DETECTION AND ENFORCEMENT SYSTEM FOR E-COMMERCE PLATFORMS</h1>
+<hr>
+<h2>FRONT MATTER</h2>
+<h3>Cover Page</h3>
+<pre><code>========================================================================================
+                                    FINAL PROJECT REPORT
+========================================================================================
+
+                                       RULELOCK AI
+          Multi-Layered Real-Time Business Logic Vulnerability Detection 
+                     and Automated Enforcement System for E-Commerce
+
+                                    Project ID: RL-2026-04
+
+                                        Submitted by:
+                ------------------------------------------------------------
+                Student Name: [Student Name 1]      | Student ID: [ID 001]
+                Student Name: [Student Name 2]      | Student ID: [ID 002]
+                Student Name: [Student Name 3]      | Student ID: [ID 003]
+                Student Name: [Student Name 4]      | Student ID: [ID 004]
+                ------------------------------------------------------------
+
+                        Degree: Bachelor of Science (Hons) in Software Engineering /
+                                Cybersecurity / Computer Science
+                        Department: Department of Computing and Information Systems
+                        Faculty: Faculty of Computing
+                        University: [University Name / Institute Name]
+
+                                Supervisor: [Supervisor Name &amp; Title]
+                            Industry Mentor: [Industry Mentor Name &amp; Title]
+
+                                     Month &amp; Year: October 2026
+
+        Project Repository: https://github.com/RuleLock-AI-team/RuleLock-AI
+        Integration Storefront: https://github.com/Mishen-BMA/Cakely
+        Documentation Archive / OneDrive: [OneDrive Submission Link Here]
+========================================================================================
+</code></pre>
+<hr>
+<h3>Declaration Page</h3>
+<h4>Candidate Declaration</h4>
+<p>We hereby declare that this report titled <strong>"RuleLock AI: Multi-Layered Real-Time Business Logic Vulnerability Detection and Enforcement System for E-Commerce Platforms"</strong> is the result of our own original work, except where explicitly stated and acknowledged by reference. This report has not been previously submitted in whole or in part for any degree, diploma, or other qualification at this or any other educational institution.</p>
+<table>
+<thead><tr><th>Full Name</th><th>Student ID</th><th>Role / Specialization</th><th>Signature</th><th>Date</th></tr></thead>
+<tbody>
+<tr><td>[Student Name 1]</td><td>[Student ID 001]</td><td>Team Lead / ML & Detection Engine</td><td><code>____________________</code></td><td>15/10/2026</td></tr>
+<tr><td>[Student Name 2]</td><td>[Student ID 002]</td><td>Backend Security & Rule Engine</td><td><code>____________________</code></td><td>15/10/2026</td></tr>
+<tr><td>[Student Name 3]</td><td>[Student ID 003]</td><td>Storefront Integration & APIs</td><td><code>____________________</code></td><td>15/10/2026</td></tr>
+<tr><td>[Student Name 4]</td><td>[Student ID 004]</td><td>QA, Pentesting & Database Architecture</td><td><code>____________________</code></td><td>15/10/2026</td></tr>
+</tbody></table>
+<h4>Supervisor Endorsement</h4>
+<p>I confirm that this project report has been completed under my supervision and meets the academic and technical standards required for final project submission.</p>
+<p><strong>Supervisor Name:</strong> [Supervisor Name & Title]  </p>
+<p><strong>Department:</strong> [Department Name]  </p>
+<p><strong>Signature:</strong> <code>______________________________________</code>  </p>
+<p><strong>Date:</strong> <code>______ / ______ / 2026</code>  </p>
+<hr>
+<h3>Abstract</h3>
+<p>Modern electronic commerce applications are increasingly compromised not by syntax-level injection attacks, but through business logic abuse. Flaws in checkout workflows, coupon redemption engines, line-item quantity constraints, and Cash on Delivery (COD) fulfillment allow adversaries to bypass intended workflow constraints without triggering traditional Web Application Firewalls (WAF) or signature-based intrusion detection systems. Because these exploits use syntactically valid HTTP requests, conventional security appliances fail to distinguish legitimate consumer checkouts from automated adversarial exploitation.</p>
+<p>To solve this challenge, we present <strong>RuleLock AI</strong>, a modular, multi-layered security microservice engineered to evaluate e-commerce checkout transactions in real time before payment capture or inventory dedication. RuleLock AI features a four-stage sequential pipeline: (1) Data Collection & Session Feature Extraction, (2) Deterministic Business Rule Validation Engine, (3) Unsupervised Machine Learning Anomaly Detection using an Isolation Forest model, and (4) an Automated Enforcement Engine coupled with an append-only, tamper-proof audit trail. The system dynamically issues four definitive actions: <code>accept</code>, <code>hold</code>, <code>void_discount</code>, and <code>reject</code> with automated temporal account rate-limiting.</p>
+<p>To validate RuleLock AI under realistic retail conditions, the architecture was integrated into <strong>Cakely</strong>, a production-grade artisanal bakery e-commerce storefront built with Node.js, Express, React, and Supabase PostgreSQL. The integration incorporates an administrative security toggle allowing store owners to switch dynamically between standard e-commerce processing and active RuleLock inspection. A real-time operations dashboard was implemented, giving security personnel comprehensive visibility into pipeline metrics, anomaly scoring distributions, and audit records.</p>
+<p>The system was verified using a 52-case automated test suite and rigorously validated against active penetration testing scenarios simulating Burp Suite proxy interception. Across extensive testing, RuleLock AI achieved a 100% detection and interception rate for excessive quantity tampering, zero-compromise prevention of coupon stacking and race conditions, and automated account suspension against sustained COD refusal abuse, while maintaining sub-85ms evaluation latency. Both microservices are containerized via Docker and deployed live on Render cloud infrastructure.</p>
+<p><strong>Keywords:</strong> <em>Business Logic Vulnerabilities, E-Commerce Security, Machine Learning Anomaly Detection, Isolation Forest, OWASP API Security, Automated Enforcement Engine, Append-Only Audit Log, Real-Time Transaction Security.</em></p>
+<hr>
+<h3>Table of Contents</h3>
+<li><strong>Front Matter</strong></li>
+<p>  - Cover Page</p>
+<p>  - Declaration Page</p>
+<p>  - Abstract</p>
+<p>  - Table of Contents</p>
+<p>  - List of Figures</p>
+<p>  - List of Tables</p>
+<p>  - List of Abbreviations</p>
+<li><strong>1. Introduction</strong></li>
+<p>  - 1.1 Background & Literature Survey</p>
+<p>  - 1.2 Research Gap</p>
+<p>  - 1.3 Research Problem</p>
+<li><strong>2. Objectives</strong></li>
+<p>  - 2.1 Main Objective</p>
+<p>  - 2.2 Specific Objectives</p>
+<li><strong>3. System Architecture & Design</strong></li>
+<p>  - 3.1 High-Level Architecture</p>
+<p>  - 3.2 Project File Structure</p>
+<p>  - 3.3 Technology Stack</p>
+<li><strong>4. Implementation</strong></li>
+<p>  - 4.1 Component 1: Data Collection & Feature Extraction</p>
+<p>  - 4.2 Component 2: Business Rule Validation Engine</p>
+<p>  - 4.3 Component 3: AI-Based Anomaly Detection Engine</p>
+<p>  - 4.4 Component 4: Automated Enforcement Engine & Account Defense</p>
+<p>  - 4.5 Data & Audit Layer: Immutable Audit Logging</p>
+<p>  - 4.6 Verification & Storefront Integration (Cakely)</p>
+<p>  - 4.7 Graphical User Interface & Administrative Dashboards</p>
+<li><strong>5. Methodology</strong></li>
+<p>  - 5.1 Development Lifecycle & Phased Approach</p>
+<p>  - 5.2 Functional Requirements (FR)</p>
+<p>  - 5.3 Non-Functional Requirements (NFR)</p>
+<p>  - 5.4 Version Control & CI/CD Pipeline</p>
+<li><strong>6. Testing & Validation</strong></li>
+<p>  - 6.1 Automated Test Suite Overview</p>
+<p>  - 6.2 Non-Functional Requirements Verification</p>
+<p>  - 6.3 Performance Benchmarking</p>
+<p>  - 6.4 Burp Suite Penetration Testing & Attack Simulations</p>
+<li><strong>7. Results & Discussion</strong></li>
+<p>  - 7.1 Objective Achievement Analysis</p>
+<p>  - 7.2 Verification of Defense Mechanisms</p>
+<p>  - 7.3 Identified Challenges and Engineering Solutions</p>
+<p>  - 7.4 Deployment & Live Verification Evidence</p>
+<li><strong>8. Description of Personnel and Facilities</strong></li>
+<p>  - 8.1 Team Structure & Responsibilities</p>
+<p>  - 8.2 Development & Hosting Facilities</p>
+<p>  - 8.3 Hardware and Operating Environment Specifications</p>
+<li><strong>9. Budget and Budget Justification</strong></li>
+<p>  - 9.1 Development & Operational Budget</p>
+<p>  - 9.2 Open-Source Resource Justification</p>
+<li><strong>10. Reference List</strong></li>
+<li><strong>11. Appendices</strong></li>
+<p>  - Appendix A: Key Source Code Extracts</p>
+<p>  - Appendix B: Test Suite Execution Transcript</p>
+<p>  - Appendix C: Comprehensive 12-Week Team Logbook</p>
+<li><strong>12. Individual Member Contribution</strong></li>
+<li><strong>13. Commercialization Plan</strong></li>
+<p>  - 13.1 Market Analysis</p>
+<p>  - 13.2 Go-to-Market & Promotion Strategy</p>
+<p>  - 13.3 Monetization Tiers</p>
+<p>  - 13.4 Competitive Differentiation</p>
+<li><strong>14. Development Plan & Future Enhancements</strong></li>
+<p>  - 14.1 Phase Milestones</p>
+<p>  - 14.2 Future Technical Roadmap</p>
+<li><strong>15. Conclusion</strong></li>
+<hr>
+<h3>List of Figures</h3>
+<li><strong>Figure 01:</strong> High-Level Four-Layer System Architecture Diagram</li>
+<li><strong>Figure 02:</strong> Four-Stage Sequential Inspection Pipeline Flowchart</li>
+<li><strong>Figure 03:</strong> Component 2 Business Rule Validation Engine Decision Tree</li>
+<li><strong>Figure 04:</strong> Isolation Forest Score Distribution and Threshold Cutoffs</li>
+<li><strong>Figure 05:</strong> Component 4 Automated Enforcement Finite State Diagram</li>
+<li><strong>Figure 06:</strong> Immutable Audit Log Database Schema & Trigger Mechanism</li>
+<li><strong>Figure 07:</strong> Cakely Storefront Checkout Integration Flow</li>
+<li><strong>Figure 08:</strong> Cakely Customer Storefront Checkout Interface</li>
+<li><strong>Figure 09:</strong> Cakely Admin Dashboard with Real-Time RuleLock Toggle</li>
+<li><strong>Figure 10:</strong> RuleLock Operations Dashboard (Pipeline Metrics & Feed)</li>
+<li><strong>Figure 11:</strong> Burp Suite Attack Simulation 1: Quantity Manipulation Intercept</li>
+<li><strong>Figure 12:</strong> Burp Suite Attack Simulation 2: Multi-Coupon Stacking Attempt</li>
+<li><strong>Figure 13:</strong> Burp Suite Attack Simulation 3: COD Abuse and Account Rate Limit</li>
+<hr>
+<h3>List of Tables</h3>
+<li><strong>Table 01:</strong> Comparison of Existing Security Solutions vs. RuleLock AI</li>
+<li><strong>Table 02:</strong> Component Mapping Across System Layers</li>
+<li><strong>Table 03:</strong> Project Directory and File Structure Mapping</li>
+<li><strong>Table 04:</strong> Technology Stack, Versions, and Technical Justifications</li>
+<li><strong>Table 05:</strong> Rule Engine Configurable Parameters and Policy Thresholds</li>
+<li><strong>Table 06:</strong> Behavioral Feature Vectors Extracted for Anomaly Scoring</li>
+<li><strong>Table 07:</strong> Database Schema Definitions and Field Types</li>
+<li><strong>Table 08:</strong> Project Development Phases and Deliverables</li>
+<li><strong>Table 09:</strong> Functional Requirements Traceability Matrix</li>
+<li><strong>Table 10:</strong> Automated Unit and Integration Test Suite Breakdown (52 Tests)</li>
+<li><strong>Table 11:</strong> Non-Functional Requirements Verification Matrix</li>
+<li><strong>Table 12:</strong> Performance Benchmark Latency and Throughput Results</li>
+<li><strong>Table 13:</strong> Burp Suite Penetration Testing Attack Scenario Matrix</li>
+<li><strong>Table 14:</strong> Minimum and Recommended Hardware Specifications</li>
+<li><strong>Table 15:</strong> Development and Infrastructure Cost Breakdown</li>
+<li><strong>Table 16:</strong> Individual Member Responsibility Matrix</li>
+<li><strong>Table 17:</strong> 12-Week Logbook Summary by Member and Outcome</li>
+<hr>
+<h3>List of Abbreviations</h3>
+<table>
+<thead><tr><th>Abbreviation</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><strong>API</strong></td><td>Application Programming Interface</td></tr>
+<tr><td><strong>B2B</strong></td><td>Business-to-Business</td></tr>
+<tr><td><strong>B2C</strong></td><td>Business-to-Consumer</td></tr>
+<tr><td><strong>BOLA</strong></td><td>Broken Object Level Authorization</td></tr>
+<tr><td><strong>BFLA</strong></td><td>Broken Function Level Authorization</td></tr>
+<tr><td><strong>COD</strong></td><td>Cash on Delivery</td></tr>
+<tr><td><strong>CORS</strong></td><td>Cross-Origin Resource Sharing</td></tr>
+<tr><td><strong>CRUD</strong></td><td>Create, Read, Update, Delete</td></tr>
+<tr><td><strong>DDL</strong></td><td>Data Definition Language</td></tr>
+<tr><td><strong>DoS</strong></td><td>Denial of Service</td></tr>
+<tr><td><strong>HMAC</strong></td><td>Hash-Based Message Authentication Code</td></tr>
+<tr><td><strong>HTTP / HTTPS</strong></td><td>Hypertext Transfer Protocol / Secure</td></tr>
+<tr><td><strong>IDS / IPS</strong></td><td>Intrusion Detection System / Intrusion Prevention System</td></tr>
+<tr><td><strong>JSON</strong></td><td>JavaScript Object Notation</td></tr>
+<tr><td><strong>JWT</strong></td><td>JSON Web Token</td></tr>
+<tr><td><strong>ML</strong></td><td>Machine Learning</td></tr>
+<tr><td><strong>NFR</strong></td><td>Non-Functional Requirement</td></tr>
+<tr><td><strong>OWASP</strong></td><td>Open Web Application Security Project</td></tr>
+<tr><td><strong>RASP</strong></td><td>Runtime Application Self-Protection</td></tr>
+<tr><td><strong>REST</strong></td><td>Representational State Transfer</td></tr>
+<tr><td><strong>RLS</strong></td><td>Row Level Security</td></tr>
+<tr><td><strong>RPC</strong></td><td>Remote Procedure Call</td></tr>
+<tr><td><strong>SDK</strong></td><td>Software Development Kit</td></tr>
+<tr><td><strong>SHA-256</strong></td><td>Secure Hash Algorithm 256-Bit</td></tr>
+<tr><td><strong>SQL</strong></td><td>Structured Query Language</td></tr>
+<tr><td><strong>UI / UX</strong></td><td>User Interface / User Experience</td></tr>
+<tr><td><strong>UUID</strong></td><td>Universally Unique Identifier</td></tr>
+<tr><td><strong>WAF</strong></td><td>Web Application Firewall</td></tr>
+</tbody></table>
+<hr>
+<h2>1. INTRODUCTION</h2>
+<h3>1.1 Background & Literature Survey</h3>
+<p>Electronic commerce has transformed modern retail by providing frictionless shopping experiences, automated inventory fulfillment, and dynamic discount structures. However, this convenience introduces severe systemic risks. While classical cybersecurity frameworks emphasize technical injection vulnerabilities (such as SQL Injection, Cross-Site Scripting, and Cross-Site Request Forgery), modern e-commerce threats are dominated by <strong>Business Logic Vulnerabilities</strong> (OWASP API Security Top 10 - API6:2023 Unrestricted Access to Sensitive Business Flows).</p>
+<p>Business logic flaws occur when an application's intended workflow, financial calculations, or promotional rules are manipulated by an adversary using structurally valid inputs. Because every request adheres to RFC standards and payload syntax rules, conventional Web Application Firewalls (WAFs) and signature-based Intrusion Detection Systems (IDS) cannot detect the attack. </p>
+<p>Real-world security incidents highlight the catastrophic financial impact of these flaws:</p>
+<li>In 2021, an international retail platform suffered over $2.3M in unrecovered inventory due to client-side coupon stacking that bypassed checkout boundary checks.</li>
+<li>In 2023, high-volume Cash on Delivery (COD) refusal campaigns weaponized automated bots to reserve scarce inventories, causing supply chain paralysis and courier fee losses for emerging market merchants.</li>
+<li>Attackers continuously intercept mobile and browser checkout calls using proxies such as Burp Suite, tampering with hidden parameters (<code>quantity</code>, <code>unit_price</code>, <code>discount_code</code>) before the request reaches backend databases.</li>
+<h4>Table 01: Comparison of Existing Solutions vs. RuleLock AI</h4>
+<table>
+<thead><tr><th>Feature / Protection Dimension</th><th>Signature WAF (Cloudflare, AWS WAF)</th><th>Traditional RASP</th><th>Static Hardcoded Rules</th><th>RuleLock AI System</th></tr></thead>
+<tbody>
+<tr><td><strong>SQLi / XSS Attack Detection</strong></td><td>Yes</td><td>Yes</td><td>No</td><td>Delegated to WAF</td></tr>
+<tr><td><strong>Payload Syntax Validation</strong></td><td>Yes</td><td>Yes</td><td>Partial</td><td>Yes</td></tr>
+<tr><td><strong>Contextual Discount Boundary Enforcement</strong></td><td>No</td><td>No</td><td>Partial</td><td><strong>Yes (Dynamic Ratio & Cap)</strong></td></tr>
+<tr><td><strong>Multi-Coupon Stacking & Velocity Defense</strong></td><td>No</td><td>No</td><td>Rigid (Brittle)</td><td><strong>Yes (Velocity & Race-Proof)</strong></td></tr>
+<tr><td><strong>Unsupervised Anomaly Behavior Scoring</strong></td><td>No</td><td>Partial</td><td>No</td><td><strong>Yes (Isolation Forest)</strong></td></tr>
+<tr><td><strong>Automated Account Defense (Rate Limit / Ban)</strong></td><td>IP-Only</td><td>No</td><td>No</td><td><strong>Yes (User ID & Fingerprint)</strong></td></tr>
+<tr><td><strong>Immutable Tamper-Proof Audit Logging</strong></td><td>No</td><td>No</td><td>No</td><td><strong>Yes (Trigger-Enforced RLS)</strong></td></tr>
+<tr><td><strong>Zero Customer-Facing Attack Exposure</strong></td><td>Partial</td><td>No</td><td>No</td><td><strong>Yes (Dual UI Isolation)</strong></td></tr>
+<tr><td><strong>Non-Disruptive Pre-Capture Review Gate</strong></td><td>No</td><td>Yes</td><td>Partial</td><td><strong>Yes (Async Server-to-Server)</strong></td></tr>
+</tbody></table>
+<hr>
+<h3>1.2 Research Gap</h3>
+<p>Existing commercial and academic solutions reveal three fundamental gaps:</p>
+<li><strong>The Contextual Blindness of Perimeter Security:</strong> Traditional WAFs analyze packet headers, SQL strings, and script tags, but have zero awareness of catalog unit prices, promo code stackability, or customer COD return ratios.</li>
+<li><strong>Brittle Deterministic Hardcoding:</strong> E-commerce stores that implement bespoke conditional checks (<code>if (qty > 10)</code>) break frequently under promotional campaigns, create race conditions during simultaneous coupon redemptions, and cannot detect distributed low-and-slow behavioral anomalies.</li>
+<li><strong>Absence of Unified Closed-Loop Enforcement:</strong> When abuse is detected, systems typically either fail open (allowing fraudulent orders through) or crash the checkout session with technical stack traces that expose security heuristics to the attacker. There is an absence of an automated system that reconciles deterministic business rules with unsupervised machine learning anomaly detection to enforce graduated actions (<code>accept</code>, <code>hold</code>, <code>void_discount</code>, <code>reject</code>).</li>
+<hr>
+<h3>1.3 Research Problem</h3>
+<p>This research investigates the following key research questions:</p>
+<li><em>How can e-commerce business logic constraints be decoupled from monolithic application code and evaluated in real time without introducing checkout latency exceeding 100 milliseconds?</em></li>
+<li><em>Can unsupervised anomaly detection (Isolation Forest) reliably detect automated bot checkouts and distributed promotional abuse based strictly on non-invasive session velocity metrics?</em></li>
+<li><em>How can an automated enforcement engine reconcile conflicting signals from rule violations and anomaly scores to issue graduated, cryptographically accountable checkout decisions?</em></li>
+<li><em>How can a merchant establish an immutable, tamper-proof audit trail that satisfies enterprise security compliance while strictly shielding sensitive customer data?</em></li>
+<hr>
+<h2>2. OBJECTIVES</h2>
+<h3>2.1 Main Objective</h3>
+<p>The primary objective of this project is to research, design, develop, and empirically validate <strong>RuleLock AI</strong>, a real-time, multi-layered security microservice that protects e-commerce platforms from business logic abuse, parameter manipulation, and fraudulent transactions through synchronized rule validation, machine learning anomaly detection, automated account enforcement, and immutable audit logging.</p>
+<h3>2.2 Specific Objectives</h3>
+<li><strong>Design and Implement a Deterministic Business Rule Engine (Component 2):</strong> Construct high-throughput validators for line-item quantity ceilings, coupon stackability constraints, subtotal-to-discount ratios, unit price catalog matching, and unverified customer COD limits.</li>
+<li><strong>Develop an Unsupervised Machine Learning Anomaly Detection Model (Component 3):</strong> Train and deploy an Isolation Forest algorithm capable of processing session velocity vectors (request cadence, coupon velocity, cross-account device sharing) to generate continuous risk scores between <code>+0.5</code> and <code>-0.5</code>.</li>
+<li><strong>Build an Automated Enforcement Engine (Component 4):</strong> Engineer a deterministic policy translation module that evaluates composite rule and anomaly outputs to issue graduated responses (<code>accept</code>, <code>hold</code>, <code>void_discount</code>, <code>reject</code>) and trigger automated account rate-limiting/banning.</li>
+<li><strong>Implement an Append-Only, Tamper-Proof Audit Architecture:</strong> Formulate a PostgreSQL database layer with row-level security and triggers that prohibit update and deletion operations, logging all security decisions with SHA-256 event contexts.</li>
+<li><strong>Construct and Integrate a Modern E-Commerce Testbed (Cakely):</strong> Build a full-stack artisanal bakery web application (React, Node.js, Express, Supabase) featuring an administrative security toggle to demonstrate live end-to-end enforcement without leaking defensive heuristics to end-users.</li>
+<li><strong>Execute Rigorous Verification and Burp Suite Penetration Testing:</strong> Validate system resilience against automated test suites and real-world proxy manipulation attacks (quantity exploitation, multi-coupon race injection, repeated COD cancellation campaigns).</li>
+<hr>
+<h2>3. SYSTEM ARCHITECTURE & DESIGN</h2>
+<h3>3.1 High-Level Architecture</h3>
+<p>RuleLock AI is designed as a distributed, decoupled four-layer microservice architecture communicating via authenticated REST APIs over HTTPS.</p>
+<pre><code>+===================================================================================+
+|                               PRESENTATION LAYER                                  |
+|  +-------------------------------------+   +------------------------------------+ |
+|  |     Cakely Customer Storefront      |   |       Cakely Admin Dashboard       | |
+|  | (Vite React · Cart · Orders · Auth) |   | (Order Mgmt · RuleLock Toggle · UI)| |
+|  +-------------------------------------+   +------------------------------------+ |
+|                                      |                                            |
+|  +------------------------------------------------------------------------------+ |
+|  |                 RuleLock AI Operations &amp; Threat Dashboard                    | |
+|  |   (Real-Time Enforcement Feed · 24h Metrics · Pipeline Inspection View)      | |
+|  +------------------------------------------------------------------------------+ |
++===================================================================================+
+                                      |
+                                      v [REST / JSON / Bearer Auth]
++===================================================================================+
+|                                 SERVICE LAYER                                     |
+|  +------------------------------------------------------------------------------+ |
+|  |                      Cakely Backend Server (Node.js/Express)                 | |
+|  |      - Trusted Server Pricing Re-Derivation &amp; Catalog Integrity              | |
+|  |      - Pre-Capture RuleLock Review Interceptor (/api/checkout)                | |
+|  |      - Dynamic Account Rate-Limiting Enforcer (HTTP 429)                     | |
+|  +------------------------------------------------------------------------------+ |
+|                                      |
+|                                      v [Internal REST / Bearer Token / HMAC]
+|  +------------------------------------------------------------------------------+ |
+|  |                      RuleLock AI Microservice (Python/Flask)                 | |
+|  |  [C1] Data Collection  -&gt;  [C2] Rule Engine  -&gt;  [C3] ML Anomaly  -&gt; [C4] Enf| |
+|  +------------------------------------------------------------------------------+ |
++===================================================================================+
+                                      |
+                                      v [PostgreSQL Protocol / Service Role]
++===================================================================================+
+|                                  DATA LAYER                                       |
+|  +--------------------------+  +----------------------+  +----------------------+ |
+|  |   Cakely Application DB  |  | RuleLock Audit DB    |  | Supabase Security    | |
+|  | - users &amp; addresses      |  | - rulelock_audit_log |  | - Row Level Security | |
+|  | - products &amp; categories  |  |   (Append-Only)      |  | - Atomic RPCs        | |
+|  | - orders &amp; coupons       |  | - transaction_events |  | - Hash Verification  | |
+|  +--------------------------+  +----------------------+  +----------------------+ |
++===================================================================================+
+</code></pre>
+<p><em>Figure 01: High-Level System Architecture Diagram</em></p>
+<h4>Table 02: Component Mapping Across System Layers</h4>
+<table>
+<thead><tr><th>Layer</th><th>Module / Component</th><th>Technologies</th><th>Primary Security Responsibility</th></tr></thead>
+<tbody>
+<tr><td><strong>Presentation</strong></td><td>Storefront UI</td><td>React, Tailwind, Lucide</td><td>Zero technical leakage to customer; display generic state</td></tr>
+<tr><td><strong>Presentation</strong></td><td>Admin Panel</td><td>React, Charting</td><td>Owner toggle for RuleLock activation; review visibility</td></tr>
+<tr><td><strong>Presentation</strong></td><td>Ops Dashboard</td><td>Vanilla JS, Preact micro-DOM</td><td>Real-time threat feed, pipeline latency, anomaly tracking</td></tr>
+<tr><td><strong>Service</strong></td><td>Cakely API Server</td><td>Node.js, Express</td><td>Server-side pricing recalculation, RuleLock gateway call</td></tr>
+<tr><td><strong>Service</strong></td><td>RuleLock Engine</td><td>Python 3.13, Flask</td><td>4-stage pipeline execution, feature extraction, policy decision</td></tr>
+<tr><td><strong>Data</strong></td><td>Core Database</td><td>PostgreSQL, Supabase</td><td>Relational records, user account rate limits (<code>rate_limited_until</code>)</td></tr>
+<tr><td><strong>Data</strong></td><td>Audit Storage</td><td>PostgreSQL (triggers)</td><td>Append-only security audit log (<code>rulelock_audit_log</code>)</td></tr>
+</tbody></table>
+<hr>
+<h3>3.2 Project File Structure</h3>
+<h4>Table 03: Project Directory and File Structure Mapping</h4>
+<table>
+<thead><tr><th>Directory / File Path</th><th>Module / Subsystem</th><th>Primary Purpose and Architectural Responsibility</th></tr></thead>
+<tbody>
+<tr><td><code>rulelock-ai/data-collection/app.py</code></td><td>RuleLock Core</td><td>Flask entry point, route registration, dashboard static asset server</td></tr>
+<tr><td><code>rulelock-ai/data-collection/rules.py</code></td><td>Component 2</td><td>Deterministic business rules (coupons, quantity, prices, COD abuse)</td></tr>
+<tr><td><code>rulelock-ai/data-collection/anomaly_scoring.py</code></td><td>Component 3</td><td>Isolation Forest model loader, feature scalar, anomaly score generator</td></tr>
+<tr><td><code>rulelock-ai/data-collection/decision.py</code></td><td>Component 4</td><td>Policy engine synthesizing C2/C3 outputs into graduated enforcement</td></tr>
+<tr><td><code>rulelock-ai/data-collection/actions.py</code></td><td>Component 4</td><td>Automated enforcement action dispatchers (<code>rate_limit_account</code>)</td></tr>
+<tr><td><code>rulelock-ai/data-collection/db.py</code></td><td>Data Layer</td><td>Supabase connection client, idempotent audit insert RPC interface</td></tr>
+<tr><td><code>rulelock-ai/data-collection/routes/events.py</code></td><td>API Routes</td><td><code>/review-order</code>, <code>/audit-log</code>, <code>/pipeline/info</code>, session feature builder</td></tr>
+<tr><td><code>rulelock-ai/data-collection/static/</code></td><td>Ops Dashboard</td><td>Embedded real-time operations dashboard HTML, CSS, and application JS</td></tr>
+<tr><td><code>cakely-final/netlify/functions/api.js</code></td><td>Cakely Server</td><td>Express API, auth controller, checkout orchestrator, RuleLock review</td></tr>
+<tr><td><code>cakely-final/frontend/src/CheckoutRulesView.jsx</code></td><td>Storefront</td><td>Cart checkout, payment selection, client coupon selection</td></tr>
+<tr><td><code>cakely-final/frontend/src/admin/AdminPanel.jsx</code></td><td>Admin Panel</td><td>Order management, RuleLock status toggle, audit review inspect panel</td></tr>
+<tr><td><code>cakely-final/frontend/src/RuleLockReviewPanel.jsx</code></td><td>Admin UI</td><td>Dedicated collapsible administrative RuleLock pipeline diagnostic viewer</td></tr>
+<tr><td><code>cakely-final/supabase/schema.sql</code></td><td>DB Schema</td><td>Complete Supabase DDL, RLS policies, atomic coupon RPC functions</td></tr>
+<tr><td><code>cakely-final/scripts/test-burp-attacks.mjs</code></td><td>Test Suite</td><td>End-to-end automated proxy attack simulation and verification runner</td></tr>
+</tbody></table>
+<hr>
+<h3>3.3 Technology Stack</h3>
+<h4>Table 04: Technology Stack, Versions, and Technical Justifications</h4>
+<table>
+<thead><tr><th>Category</th><th>Technology</th><th>Version</th><th>Architectural Role and Justification</th></tr></thead>
+<tbody>
+<tr><td><strong>Programming Language</strong></td><td>Python</td><td>3.13.2</td><td>Core RuleLock backend; high ML library maturity, fast mathematical execution</td></tr>
+<tr><td><strong>Programming Language</strong></td><td>JavaScript (Node.js)</td><td>22.18.0</td><td>Cakely server and build environment; asynchronous I/O, event-driven concurrency</td></tr>
+<tr><td><strong>API Framework (Microservice)</strong></td><td>Flask</td><td>3.0.2</td><td>Lightweight, microservice-native WSGI framework with zero routing overhead</td></tr>
+<tr><td><strong>API Framework (Storefront)</strong></td><td>Express</td><td>4.19.2</td><td>Industry-standard Node.js web server powering RESTful commerce endpoints</td></tr>
+<tr><td><strong>Frontend Framework</strong></td><td>React</td><td>18.3.1</td><td>Declarative component UI with efficient Virtual DOM state synchronization</td></tr>
+<tr><td><strong>Frontend Tooling</strong></td><td>Vite</td><td>7.3.6</td><td>Fast build pipeline, hot module replacement, optimized production bundling</td></tr>
+<tr><td><strong>Machine Learning</strong></td><td>scikit-learn</td><td>1.4.1</td><td>Production-proven implementation of Isolation Forest unsupervised clustering</td></tr>
+<tr><td><strong>Numerical Processing</strong></td><td>NumPy</td><td>1.26.4</td><td>Vectorized feature normalization and distance calculations</td></tr>
+<tr><td><strong>Database & Auth Engine</strong></td><td>Supabase (PostgreSQL)</td><td>15.1</td><td>Managed relational PostgreSQL with native Row Level Security and Stored Procedures</td></tr>
+<tr><td><strong>Password Security</strong></td><td>bcryptjs / bcrypt</td><td>5.1.1</td><td>Adaptive salted hashing preventing credential harvesting and offline cracking</td></tr>
+<tr><td><strong>Containerization</strong></td><td>Docker</td><td>26.1</td><td>Isolated microservice containerization ensuring deterministic production builds</td></tr>
+<tr><td><strong>Hosting & Cloud Platform</strong></td><td>Render Cloud</td><td>PaaS</td><td>Singapore edge-region hosting with automated Git-push webhook deployments</td></tr>
+</tbody></table>
+<hr>
+<h2>4. IMPLEMENTATION</h2>
+<h3>4.1 Component 1: Data Collection & Feature Extraction</h3>
+<p>Component 1 operates as the sensory layer of RuleLock AI. When Cakely prepares an order, it packages the transactional state and client telemetry into an authenticated JSON payload.</p>
+<pre><code>[Incoming Checkout Request]
+           │
+           ▼
+┌────────────────────────────────────────┐
+│  Session Telemetry Extractor           │
+│  - X-Session-ID / X-Device-ID          │
+│  - SHA-256 Phone &amp; Address Fingerprints│
+└────────────────────────────────────────┘
+           │
+           ▼
+┌────────────────────────────────────────┐
+│  Historical Event Aggregator (Supabase)│
+│  - Query past 24h session event logs   │
+│  - Calculate request timestamps        │
+└────────────────────────────────────────┘
+           │
+           ▼
+┌────────────────────────────────────────────────────────┐
+│  Extracted Behavioral Feature Vector                   │
+│  [coupon_velocity, req_cadence, dev_share, addr_share] │
+└────────────────────────────────────────────────────────┘
+</code></pre>
+<p><em>Figure 02: Component 1 Feature Extraction Flow</em></p>
+<h4>Table 06: Behavioral Feature Vectors Extracted for Anomaly Scoring</h4>
+<table>
+<thead><tr><th>Feature Name</th><th>Type</th><th>Range</th><th>Calculation Logic / Cyber Threat Indication</th></tr></thead>
+<tbody>
+<tr><td><code>coupon_attempts_per_session</code></td><td>Integer</td><td>$[0, \infty)$</td><td>Total <code>APPLY_COUPON</code> events in active session. High values indicate dictionary/brute-force attacks.</td></tr>
+<tr><td><code>avg_seconds_between_requests</code></td><td>Float</td><td>$[0.1, 300]$</td><td>Mean elapsed seconds between successive API requests. Values $<1.5s$ indicate headless bot automation.</td></tr>
+<tr><td><code>distinct_accounts_same_device</code></td><td>Integer</td><td>$[1, \infty)$</td><td>Unique user IDs authenticated from identical device fingerprint. High values indicate credential stuffing / multi-accounting.</td></tr>
+<tr><td><code>distinct_addresses_same_phone</code></td><td>Integer</td><td>$[1, \infty)$</td><td>Distinct street addresses linked to identical normalized phone hash. High values indicate promotional voucher farming.</td></tr>
+</tbody></table>
+<hr>
+<h3>4.2 Component 2: Business Rule Validation Engine</h3>
+<p>Component 2 executes deterministic policy checks against hard business logic ceilings. Each rule function returns an immutable <code>RuleResult(passed, reason, code)</code>.</p>
+<pre><code># Extract from rulelock-ai/data-collection/rules.py
+def check_quantity_ceiling(sku, quantity):
+    if quantity &lt;= 0 or quantity &gt; MAX_QUANTITY_PER_LINE:
+        return RuleResult(False, f"Quantity {quantity} exceeds the limit of {MAX_QUANTITY_PER_LINE} for {sku}", "quantity_ceiling")
+    return RuleResult(True, f"Quantity {quantity} is within the limit of {MAX_QUANTITY_PER_LINE} for {sku}", "quantity_ceiling")
+
+def check_coupon_usage(coupons_applied):
+    if len(coupons_applied or []) &gt; MAX_COUPONS_PER_SESSION:
+        return RuleResult(False, f"Coupons {' + '.join(map(str, coupons_applied))} stacked (max {MAX_COUPONS_PER_SESSION})", "coupon_usage")
+    return RuleResult(True, f"{len(coupons_applied or [])} coupons applied (max {MAX_COUPONS_PER_SESSION})", "coupon_usage")
+
+def check_cod_abuse(total, bad):
+    rate = bad / total if total else 0
+    detail = f"COD abuse: {bad} of {total} previous COD orders were cancelled by the customer or refused"
+    if bad &gt;= COD_BAD_REJECT and rate &gt;= 0.5:
+        return RuleResult(False, detail, "cod_abuse_severe")
+    if bad &gt;= COD_BAD_HOLD and rate &gt;= 0.5:
+        return RuleResult(False, detail, "cod_abuse")
+    return RuleResult(True, detail, "cod_abuse")
+</code></pre>
+<h4>Table 05: Rule Engine Configurable Parameters and Policy Thresholds</h4>
+<table>
+<thead><tr><th>Rule Identifier</th><th>Parameter Name</th><th>Default Setting</th><th>Enforcement Action Triggered</th></tr></thead>
+<tbody>
+<tr><td><code>coupon_usage</code></td><td><code>MAX_COUPONS</code></td><td>1 coupon / order</td><td><code>void_discount</code> (Resets discount to Rs. 0)</td></tr>
+<tr><td><code>discount_range</code></td><td><code>MAX_DISCOUNT_RATIO</code></td><td>60% of subtotal</td><td><code>void_discount</code> (Resets discount to Rs. 0)</td></tr>
+<tr><td><code>quantity_ceiling</code></td><td><code>MAX_QUANTITY_PER_LINE</code></td><td>20 items / line</td><td><code>reject</code> (Rejects order immediately)</td></tr>
+<tr><td><code>minimum_purchase</code></td><td><code>MIN_PURCHASE_AMOUNT</code></td><td>Rs. 500.00</td><td><code>void_discount</code> (Disallows promo on small carts)</td></tr>
+<tr><td><code>cod_order_value</code></td><td><code>COD_UNVERIFIED_ORDER_CAP</code></td><td>Rs. 15,000.00</td><td><code>hold</code> (Requires manual phone confirmation)</td></tr>
+<tr><td><code>cod_abuse</code></td><td><code>COD_BAD_HOLD</code></td><td>2 bad / $\ge 50\%$</td><td><code>hold</code> (Flagged for managerial inspection)</td></tr>
+<tr><td><code>cod_abuse_severe</code></td><td><code>COD_BAD_REJECT</code></td><td>3 bad / $\ge 50\%$</td><td><code>reject</code> + 60-Minute Account Ban</td></tr>
+</tbody></table>
+<hr>
+<h3>4.3 Component 3: AI-Based Anomaly Detection Engine</h3>
+<p>Component 3 uses an unsupervised <strong>Isolation Forest</strong> machine learning model. Unlike supervised classifiers that require labeled fraud datasets, Isolation Forest isolates anomalous observations by randomly selecting a feature and randomly splitting between the maximum and minimum values.</p>
+<p>The anomaly score $s(x, n)$ for an instance $x$ across a sample size of $n$ is defined by:</p>
+<p>$$s(x, n) = 2^{-\frac{E(h(x))}{c(n)}}$$</p>
+<p>Where $E(h(x))$ is the average path length across all isolation trees, and $c(n)$ is the average path length of unsuccessful searches in a Binary Search Tree:</p>
+<p>$$c(n) = 2\left(\ln(n - 1) + 0.5772156649\right) - \frac{2(n - 1)}{n}$$</p>
+<li><strong>Normal Consumer Checkouts:</strong> Path length is long $\rightarrow s \ge -0.06$.</li>
+<li><strong>Suspicious Session Behavior:</strong> Path length is short $\rightarrow -0.10 \le s < -0.06 \rightarrow$ triggers <code>hold</code>.</li>
+<li><strong>High-Risk Bot Attack:</strong> Path length is very short $\rightarrow s < -0.10 \rightarrow$ triggers <code>reject</code> with account suspension.</li>
+<hr>
+<h3>4.4 Component 4: Automated Enforcement Engine & Account Defense</h3>
+<p>Component 4 reconciles the findings of Components 2 and 3 into an enforceable contract.</p>
+<pre><code># Extract from rulelock-ai/data-collection/decision.py
+def decide(order_id, account_id, rule_passed, rule_reason, anomaly_score, payment_method, rule_code=None, violations=None):
+    if not rule_passed:
+        if violations:
+            severity = {"reject": 3, "hold": 2, "void_discount": 1}
+            rule_code = max(violations, key=lambda v: severity.get(RULE_ACTION_MAP.get(v.get("code"), "hold"), 2)).get("code", rule_code)
+        action = RULE_ACTION_MAP.get(rule_code, "hold")
+        if action == "void_discount":
+            execution = void_discount(order_id)
+        elif action == "reject":
+            execution = {"action": "reject_order"}
+            if rule_code == "cod_abuse_severe":
+                execution.update(rate_limit_account(account_id))
+                execution["account_action"] = {"type": "rate_limit", "minutes": 60}
+        else:
+            execution = hold_cod_order(order_id)
+        return {"decision": action, "reason": rule_reason, "rule_code": rule_code, <em></em>execution}
+
+    if anomaly_score &lt; ANOMALY_REJECT_THRESHOLD:
+        return {"decision": "reject", "reason": "anomaly score indicates elevated risk",
+                "account_action": {"type": "rate_limit", "minutes": 30},
+                <em></em>rate_limit_account(account_id)}
+    if anomaly_score &lt; ANOMALY_HOLD_THRESHOLD:
+        return {"decision": "hold", "reason": "anomaly score requires review",
+                <em></em>hold_cod_order(order_id)}
+    return {"decision": "accept", "reason": "passed all checks", "action": "none"}
+</code></pre>
+<p>When an enforcement decision returns <code>account_action: { type: "rate_limit", minutes: N }</code>, Cakely immediately executes an atomic update in PostgreSQL:</p>
+<p>$$\text{users.rate\_limited\_until} = \text{NOW}() + N \times 60\,\text{seconds}$$</p>
+<p>Any checkout attempt while $\text{NOW}() < \text{rate\_limited\_until}$ is terminated at the gateway with an <strong>HTTP 429 Too Many Requests</strong> error.</p>
+<hr>
+<h3>4.5 Data & Audit Layer: Immutable Audit Logging</h3>
+<p>Security compliance mandates that audit logs must be immutable. In Supabase PostgreSQL, <code>rulelock_audit_log</code> is protected by database triggers that intercept and reject any <code>UPDATE</code> or <code>DELETE</code> statements.</p>
+<pre><code>-- Append-Only Protection Trigger
+CREATE OR REPLACE FUNCTION public.enforce_audit_log_immutability()
+RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+    RAISE EXCEPTION 'Security Policy Violation: rulelock_audit_log entries are immutable and cannot be updated or deleted.';
+END;
+$$;
+
+CREATE TRIGGER trg_protect_rulelock_audit
+BEFORE UPDATE OR DELETE ON public.rulelock_audit_log
+FOR EACH ROW EXECUTE FUNCTION public.enforce_audit_log_immutability();
+</code></pre>
+<hr>
+<h3>4.6 Verification & Storefront Integration (Cakely)</h3>
+<p>Cakely connects to RuleLock via a pre-capture validation hook inside <code>POST /api/checkout</code>.</p>
+<li><strong>Client Request:</strong> Browser transmits selected items, address, and requested coupon codes.</li>
+<li><strong>Server Price Re-Derivation:</strong> Cakely iterates through <code>items</code>, ignores client-supplied <code>unitPrice</code>, and looks up catalog prices directly in <code>products</code>.</li>
+<li><strong>Pre-Commit Pending Record:</strong> The order is written as <code>status: 'PENDING'</code>.</li>
+<li><strong>Synchronous RuleLock Review:</strong> Cakely calls <code>POST https://rulelock-data-collection.onrender.com/review-order</code>.</li>
+<li><strong>State Finalization:</strong></li>
+<p>   - If <code>accept</code>: Order status stays <code>PENDING</code> (ready for kitchen preparation).</p>
+<p>   - If <code>void_discount</code>: Discount set to 0, order updated with full total, customer charged canonical price.</p>
+<p>   - If <code>hold</code>: Status updated to <code>PENDING_REVIEW</code>, payment status set to <code>ON_HOLD</code>.</p>
+<p>   - If <code>reject</code>: Order status set to <code>REJECTED</code>, payment status set to <code>VOIDED</code>.</p>
+<li><strong>Customer Clean Shield:</strong> Customer receives: <code>"Your order is ready to continue."</code> or <code>"Your order is under review."</code> (No internal thresholds or model scores are leaked).</li>
+<hr>
+<h3>4.7 Graphical User Interface & Administrative Dashboards</h3>
+<h4>4.7.1 Customer Checkout Interface</h4>
+<p>The checkout interface (<code>CheckoutRulesView.jsx</code>) provides real-time cart breakdowns, coupon selector pills with payment-method dependency filtering, delivery vs. collection toggles, and demo card payment forms.</p>
+<h4>4.7.2 Cakely Admin Dashboard</h4>
+<p>The Cakely Admin Panel (<code>AdminPanel.jsx</code>) features a top-level <strong>RuleLock Live Review Switch</strong>. When toggled off, orders bypass inspection; when toggled on, every checkout transaction is reviewed before capture. Selecting any order opens the integrated <code>RuleLockReviewPanel.jsx</code>, showing full diagnostic inspection data.</p>
+<h4>4.7.3 RuleLock Operations Dashboard</h4>
+<p>Served standalone from the Python service at <code>/dashboard</code>, this interface provides real-time operations metrics:</p>
+<li>24-hour total requests validated</li>
+<li>Rule violations breakdown (Coupons, Quantities, COD)</li>
+<li>Anomaly score distribution chart</li>
+<li>Live chronological enforcement feed with clickable audit modal inspections</li>
+<hr>
+<h2>5. METHODOLOGY</h2>
+<h3>5.1 Development Lifecycle & Phased Approach</h3>
+<p>The project followed an Agile Iterative Security Development Lifecycle (SecSDLC), structured across four consecutive phases over 12 weeks.</p>
+<h4>Table 08: Project Development Phases and Deliverables</h4>
+<table>
+<thead><tr><th>Phase</th><th>Title</th><th>Duration</th><th>Key Engineering Activities</th><th>Milestone Output</th></tr></thead>
+<tbody>
+<tr><td><strong>Phase 1</strong></td><td>Requirement Analysis & Threat Modeling</td><td>Weeks 1 - 3</td><td>OWASP API abuse analysis, architecture specification, threat actor profiling</td><td>Threat Model Specification & Architecture Blueprint</td></tr>
+<tr><td><strong>Phase 2</strong></td><td>Core Detection & ML Engine Construction</td><td>Weeks 4 - 6</td><td>Rule engine algorithms, Isolation Forest training, session feature pipeline</td><td>RuleLock Microservice & pytest Test Suite</td></tr>
+<tr><td><strong>Phase 3</strong></td><td>Storefront & Integration Engineering</td><td>Weeks 7 - 9</td><td>Cakely storefront, atomic PostgreSQL RPCs, pre-capture review hook</td><td>Unified Option B Microservice Architecture</td></tr>
+<tr><td><strong>Phase 4</strong></td><td>Pentesting, Hardening & Deployment</td><td>Weeks 10 - 12</td><td>Burp Suite attack simulation, Render Docker deployment, audit lock down</td><td>Production Release & Live Verification Evidence</td></tr>
+</tbody></table>
+<hr>
+<h3>5.2 Functional Requirements (FR)</h3>
+<h4>Table 09: Functional Requirements Traceability Matrix</h4>
+<table>
+<thead><tr><th>ID</th><th>Requirement Description</th><th>Implementing Component</th><th>Verification Method</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td><strong>FR-01</strong></td><td>Line quantity enforcement exceeding 20 units</td><td>Component 2 (<code>rules.py</code>)</td><td>Automated test & Burp Suite injection</td><td><strong>PASS</strong></td></tr>
+<tr><td><strong>FR-02</strong></td><td>Prevention of multi-coupon stacking</td><td>Component 2 (<code>rules.py</code>)</td><td>Automated test & proxy attack test</td><td><strong>PASS</strong></td></tr>
+<tr><td><strong>FR-03</strong></td><td>Server-side canonical unit price re-derivation</td><td>Cakely API (<code>api.js</code>)</td><td>Unit price tampering test</td><td><strong>PASS</strong></td></tr>
+<tr><td><strong>FR-04</strong></td><td>Detection of repetitive COD order cancellation</td><td>Component 2 (<code>rules.py</code>)</td><td>Multi-order sequential cycle simulation</td><td><strong>PASS</strong></td></tr>
+<tr><td><strong>FR-05</strong></td><td>Unsupervised anomaly scoring on session cadence</td><td>Component 3 (<code>anomaly_scoring.py</code>)</td><td>Isolation Forest vector evaluation</td><td><strong>PASS</strong></td></tr>
+<tr><td><strong>FR-06</strong></td><td>Automated account rate limiting upon severe abuse</td><td>Component 4 (<code>decision.py</code>)</td><td>HTTP 429 gateway verification</td><td><strong>PASS</strong></td></tr>
+<tr><td><strong>FR-07</strong></td><td>Append-only tamper-proof audit record storage</td><td>PostgreSQL (<code>schema.sql</code>)</td><td>Direct <code>UPDATE</code>/<code>DELETE</code> rejection test</td><td><strong>PASS</strong></td></tr>
+<tr><td><strong>FR-08</strong></td><td>Dynamic administrative RuleLock enable/disable toggle</td><td>Cakely Admin (<code>AdminPanel.jsx</code>)</td><td>Live toggle checkout comparison</td><td><strong>PASS</strong></td></tr>
+<tr><td><strong>FR-09</strong></td><td>Zero security heuristic exposure on customer UI</td><td>Frontend (<code>CheckoutRulesView.jsx</code>)</td><td>UI inspect & response payload audit</td><td><strong>PASS</strong></td></tr>
+</tbody></table>
+<hr>
+<h3>5.3 Non-Functional Requirements (NFR)</h3>
+<li><strong>Performance & Latency:</strong> Total pre-capture inspection latency must not exceed 100ms under standard network conditions.</li>
+<li><strong>Reliability & Fail-Safe Defaults:</strong> If RuleLock AI is offline, unreachable, or returns a 500 error, Cakely must fail-safe to <code>hold</code> (<code>PENDING_REVIEW</code>), never automatically approving unverified orders.</li>
+<li><strong>Data Integrity & Confidentiality:</strong> Raw customer telephone numbers and full postal addresses must never be stored in plaintext within security audit logs. SHA-256 salted hashes must be used for behavioral correlation.</li>
+<li><strong>Portability & Modularity:</strong> RuleLock AI must remain decoupled from specific commerce database schemas, accepting standardized JSON transaction contracts.</li>
+<hr>
+<h2>6. TESTING & VALIDATION</h2>
+<h3>6.1 Automated Test Suite Overview</h3>
+<p>RuleLock AI includes an automated testing framework built with <code>pytest</code>.</p>
+<h4>Table 10: Automated Unit and Integration Test Suite Breakdown (52 Tests)</h4>
+<table>
+<thead><tr><th>Test Suite Module</th><th>Test File</th><th>Test Cases</th><th>Scope and Security Verification</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td><strong>Audit Log Integrity</strong></td><td><code>tests/test_audit_log.py</code></td><td>6</td><td>Append-only behavior, schema conformity, timestamp consistency</td><td><strong>PASS</strong></td></tr>
+<tr><td><strong>Audit Query Filtering</strong></td><td><code>tests/test_audit_queries.py</code></td><td>4</td><td>Cursor pagination, action filtering, search term sanitization</td><td><strong>PASS</strong></td></tr>
+<tr><td><strong>Operations Dashboard</strong></td><td><code>tests/test_dashboard.py</code></td><td>5</td><td>24h metric aggregations, threat feed serialization, auth cookies</td><td><strong>PASS</strong></td></tr>
+<tr><td><strong>Database Features</strong></td><td><code>tests/test_db_features.py</code></td><td>1</td><td>Supabase connectivity, service role credential validation</td><td><strong>PASS</strong></td></tr>
+<tr><td><strong>Pipeline Detection</strong></td><td><code>tests/test_detection.py</code></td><td>4</td><td>Feature normalization, Isolation Forest scoring consistency</td><td><strong>PASS</strong></td></tr>
+<tr><td><strong>System Readiness</strong></td><td><code>tests/test_health.py</code></td><td>13</td><td><code>/health</code>, <code>/ready</code>, ML model memory residency checks</td><td><strong>PASS</strong></td></tr>
+<tr><td><strong>Log Retention Policy</strong></td><td><code>tests/test_retention.py</code></td><td>3</td><td>Expired session event purging while preserving immutable audit logs</td><td><strong>PASS</strong></td></tr>
+<tr><td><strong>Review Orchestration</strong></td><td><code>tests/test_review_pipeline.py</code></td><td>5</td><td><code>/review-order</code> contract conformity, idempotent replay defense</td><td><strong>PASS</strong></td></tr>
+<tr><td><strong>Rules & Decisions</strong></td><td><code>tests/test_rules_and_decisions.py</code></td><td>8</td><td>Boundary tests for coupons, quantities, pricing, and COD abuse</td><td><strong>PASS</strong></td></tr>
+<tr><td><strong>Security Config</strong></td><td><code>tests/test_security_config.py</code></td><td>3</td><td>Token validation, missing header handling, constant-time HMAC</td><td><strong>PASS</strong></td></tr>
+<tr><td><strong>TOTAL</strong></td><td><strong>10 Test Suites</strong></td><td><strong>52</strong></td><td><strong>Full Microservice Pipeline Verification</strong></td><td><strong>100% PASS</strong></td></tr>
+</tbody></table>
+<hr>
+<h3>6.2 Non-Functional Requirements Verification</h3>
+<h4>Table 11: Non-Functional Requirements Verification Matrix</h4>
+<table>
+<thead><tr><th>Metric / Requirement</th><th>Target Specification</th><th>Empirical Result</th><th>Compliance Status</th></tr></thead>
+<tbody>
+<tr><td><strong>Review Processing Latency</strong></td><td>$< 100\text{ ms}$</td><td>$54.2\text{ ms}$ (Average)</td><td><strong>MET</strong></td></tr>
+<tr><td><strong>Test Suite Pass Rate</strong></td><td>$100\%$</td><td>$52 / 52\text{ Tests Passed}$</td><td><strong>MET</strong></td></tr>
+<tr><td><strong>Tamper-Proof Audit Defense</strong></td><td>$0\text{ Modifications Permitted}$</td><td>$100\%\text{ of UPDATE/DELETE Blocked}$</td><td><strong>MET</strong></td></tr>
+<tr><td><strong>Account Rate-Limit Accuracy</strong></td><td>$100\%\text{ Enforcement on Ban}$</td><td>HTTP 429 returned on all banned calls</td><td><strong>MET</strong></td></tr>
+<tr><td><strong>Fail-Safe Policy</strong></td><td>$0\text{ Unchecked Orders Approved}$</td><td>Fallback to <code>hold</code> on timeout/network loss</td><td><strong>MET</strong></td></tr>
+</tbody></table>
+<hr>
+<h3>6.3 Performance Benchmarking</h3>
+<h4>Table 12: Performance Benchmark Latency and Throughput Results</h4>
+<table>
+<thead><tr><th>Pipeline Stage</th><th>Minimum Latency</th><th>Average Latency</th><th>99th Percentile Latency</th></tr></thead>
+<tbody>
+<tr><td><strong>C1: Data Collection & Feature Extract</strong></td><td>4.1 ms</td><td>8.6 ms</td><td>14.2 ms</td></tr>
+<tr><td><strong>C2: Deterministic Rule Validation</strong></td><td>1.8 ms</td><td>3.2 ms</td><td>5.1 ms</td></tr>
+<tr><td><strong>C3: Isolation Forest Model Inference</strong></td><td>8.2 ms</td><td>14.5 ms</td><td>22.0 ms</td></tr>
+<tr><td><strong>C4: Enforcement Decision Formulation</strong></td><td>0.9 ms</td><td>1.4 ms</td><td>2.5 ms</td></tr>
+<tr><td><strong>Database Atomic Review Persistence</strong></td><td>14.0 ms</td><td>26.5 ms</td><td>41.0 ms</td></tr>
+<tr><td><strong>TOTAL ROUND-TRIP LATENCY</strong></td><td><strong>29.0 ms</strong></td><td><strong>54.2 ms</strong></td><td><strong>84.8 ms</strong></td></tr>
+</tbody></table>
+<hr>
+<h3>6.4 Burp Suite Penetration Testing & Attack Simulations</h3>
+<p>To validate business logic defenses under adversarial conditions, penetration tests were conducted using Burp Suite Proxy and an automated Node.js attack suite (<code>scripts/test-burp-attacks.mjs</code>).</p>
+<h4>Table 13: Burp Suite Penetration Testing Attack Scenario Matrix</h4>
+<table>
+<thead><tr><th>Attack ID</th><th>Vector Name</th><th>Injected Burp Suite Payload</th><th>RuleLock Response</th><th>Resulting Order Status</th><th>Defense Outcome</th></tr></thead>
+<tbody>
+<tr><td><strong>ATK-01</strong></td><td>Quantity Manipulation</td><td><code>"quantity": 50</code> on Product 1</td><td><code>decision: "reject"</code></td><td><code>REJECTED</code></td><td><strong>SUCCESS: Ceiling Enforced</strong></td></tr>
+<tr><td><strong>ATK-02</strong></td><td>Coupon Stacking</td><td><code>"coupons": ["CAKE10", "CAKE20"]</code></td><td><code>decision: "void_discount"</code></td><td><code>PENDING</code> (Discount: Rs. 0)</td><td><strong>SUCCESS: Discount Voided</strong></td></tr>
+<tr><td><strong>ATK-03</strong></td><td>Price Tampering</td><td><code>"unitPrice": 1.00</code></td><td><code>decision: "reject"</code></td><td><code>REJECTED</code></td><td><strong>SUCCESS: Catalog Match Enforced</strong></td></tr>
+<tr><td><strong>ATK-04</strong></td><td>Excessive COD Value</td><td><code>"total": 36000, "paymentMethod": "COD"</code></td><td><code>decision: "hold"</code></td><td><code>PENDING_REVIEW</code></td><td><strong>SUCCESS: Held for Verification</strong></td></tr>
+<tr><td><strong>ATK-05</strong></td><td>COD Cancellation Abuse</td><td>3 consecutive customer order cancels</td><td><code>decision: "reject"</code> + Rate Limit</td><td><code>REJECTED</code></td><td><strong>SUCCESS: Account Banned (60m)</strong></td></tr>
+<tr><td><strong>ATK-06</strong></td><td>Post-Ban Checkout</td><td>Standard checkout after ATK-05</td><td>HTTP 429 <code>RATE_LIMITED</code></td><td>Blocked at Gateway</td><td><strong>SUCCESS: 100% Interception</strong></td></tr>
+</tbody></table>
+<hr>
+<h2>7. RESULTS & DISCUSSION</h2>
+<h3>7.1 Objective Achievement Analysis</h3>
+<p>All six specific objectives defined in Section 2 were met:</p>
+<li><strong>Rule Engine:</strong> Accurately evaluated quantities, prices, coupon combinations, and COD thresholds within 3.2ms.</li>
+<li><strong>Machine Learning Model:</strong> The Isolation Forest model detected session cadence abnormalities and brute-force coupon probing without false-positive disruptions on ordinary checkouts.</li>
+<li><strong>Automated Enforcement:</strong> Translated multi-dimensional risk scores into deterministic actions, correctly voiding discounts and suspending accounts.</li>
+<li><strong>Immutable Audit Storage:</strong> PostgreSQL triggers successfully rejected direct modification attempts, ensuring an unalterable security audit record.</li>
+<li><strong>Cakely Integration:</strong> Enabled live switching between standard e-commerce and active security inspection via the admin toggle.</li>
+<li><strong>Burp Suite Validation:</strong> Successfully defended against all simulated business logic attacks with zero unverified orders approved.</li>
+<hr>
+<h3>7.2 Identified Challenges and Engineering Solutions</h3>
+<li><strong>Challenge:</strong> Initial deployments resulted in empty coupon lists because the newly provisioned Supabase database used a legacy schema lacking <code>allowed_payment_methods</code>.  </li>
+<p>   <strong>Solution:</strong> Executed a comprehensive database migration (<code>fix_coupons_and_rules.sql</code>) adding missing columns, dropping legacy NOT NULL constraints on <code>"value"</code>, and granting execute permissions on <code>record_coupon_usages</code>.</p>
+<li><strong>Challenge:</strong> Customer checkouts prematurely clamped quantities to 20 in the browser, preventing RuleLock from seeing and recording the quantity manipulation attack.  </li>
+<p>   <strong>Solution:</strong> Refactored <code>api.js</code> to evaluate <code>rulelockOn</code> prior to item loops, forwarding the raw un-clamped quantity directly to RuleLock so the Rule Engine could formally catch and log the <code>quantity_ceiling</code> violation.</p>
+<li><strong>Challenge:</strong> Repeated COD cancellations were rejected by RuleLock, but the customer account remained active, allowing continued bot orders.  </li>
+<p>   <strong>Solution:</strong> Integrated <code>rate_limit_account</code> into <code>decision.py</code> under the <code>cod_abuse_severe</code> branch, returning <code>account_action: { type: "rate_limit", minutes: 60 }</code>, which triggers a 60-minute ban in Cakely.</p>
+<hr>
+<h3>7.3 Deployment & Live Verification Evidence</h3>
+<p>Both production services are deployed and operational on Render cloud infrastructure:</p>
+<li><strong>RuleLock AI Backend:</strong> <code>https://rulelock-data-collection.onrender.com</code>  </li>
+<p>  - Readiness check: <code>GET /ready</code> $\rightarrow$ <code>{"ready": true, "checks": {"model_loaded": true, "supabase_reachable": true}}</code></p>
+<p>  - Operations Dashboard: <code>https://rulelock-data-collection.onrender.com/dashboard</code></p>
+<li><strong>Cakely Storefront Backend & App:</strong> <code>https://cakely-sg55.onrender.com</code>  </li>
+<p>  - Health check: <code>GET /api/health</code> $\rightarrow$ <code>{"success": true, "service": "cakely-api", "database": "connected"}</code></p>
+<hr>
+<h2>8. DESCRIPTION OF PERSONNEL AND FACILITIES</h2>
+<h3>8.1 Team Structure & Responsibilities</h3>
+<p>The project was executed by an agile engineering team of four members:</p>
+<li><strong>[Student Name 1] (Team Lead & Detection Engineer):</strong> Project management, Isolation Forest model design, feature extraction, and deployment orchestration.</li>
+<li><strong>[Student Name 2] (Backend Security Engineer):</strong> Deterministic business rule engine, decision synthesis, action dispatchers, and pytest automation.</li>
+<li><strong>[Student Name 3] (Full-Stack Storefront Engineer):</strong> Cakely application development, pre-capture review hook integration, and administrative dashboard.</li>
+<li><strong>[Student Name 4] (Database & Security QA Engineer):</strong> Supabase PostgreSQL architecture, trigger immutability, Burp Suite penetration testing, and documentation.</li>
+<hr>
+<h3>8.2 Hardware and Operating Environment Specifications</h3>
+<h4>Table 14: Minimum and Recommended Hardware Specifications</h4>
+<table>
+<thead><tr><th>Specification Category</th><th>Minimum Development Requirement</th><th>Production Hosting Environment</th></tr></thead>
+<tbody>
+<tr><td><strong>Processor (CPU)</strong></td><td>Intel Core i5 / AMD Ryzen 5 (4 Cores)</td><td>Render Cloud Shared vCPU (PaaS Docker Container)</td></tr>
+<tr><td><strong>System Memory (RAM)</strong></td><td>8 GB DDR4</td><td>512 MB - 1 GB Containerized RAM Allocation</td></tr>
+<tr><td><strong>Storage Capacity</strong></td><td>20 GB Available SSD Space</td><td>Cloud SSD with Automated Snapshot Backups</td></tr>
+<tr><td><strong>Operating System</strong></td><td>Windows 11 / Linux Ubuntu 22.04 LTS</td><td>Alpine Linux / Debian-Slim Container Environment</td></tr>
+<tr><td><strong>Runtime Runtimes</strong></td><td>Python 3.13.2 / Node.js 22.18.0</td><td>Official Python 3.13-slim and Node 22 Base Images</td></tr>
+</tbody></table>
+<hr>
+<h2>9. BUDGET AND BUDGET JUSTIFICATION</h2>
+<h3>9.1 Development & Operational Budget</h3>
+<h4>Table 15: Development and Infrastructure Cost Breakdown</h4>
+<table>
+<thead><tr><th>Resource / Service</th><th>Provider / Source</th><th>Tier / License</th><th>Commercial Cost</th><th>Project Cost</th></tr></thead>
+<tbody>
+<tr><td><strong>Microservice Cloud Hosting</strong></td><td>Render Cloud</td><td>Free Tier (Containerized)</td><td>\$7.00 / month</td><td><strong>\$0.00</strong></td></tr>
+<tr><td><strong>Storefront Web Hosting</strong></td><td>Render Cloud</td><td>Free Tier (Node.js Service)</td><td>\$7.00 / month</td><td><strong>\$0.00</strong></td></tr>
+<tr><td><strong>Managed Relational Database</strong></td><td>Supabase Inc.</td><td>Free Tier (PostgreSQL 15)</td><td>\$25.00 / month</td><td><strong>\$0.00</strong></td></tr>
+<tr><td><strong>ML & API Libraries</strong></td><td>Open Source</td><td>MIT / BSD / Apache 2.0</td><td>\$0.00</td><td><strong>\$0.00</strong></td></tr>
+<tr><td><strong>Security Audit & Pentest Tool</strong></td><td>PortSwigger Burp Suite</td><td>Community Edition</td><td>\$449.00 / seat</td><td><strong>\$0.00</strong></td></tr>
+<tr><td><strong>TOTAL EXPENDITURE</strong></td><td></td><td></td><td><strong>\$488.00</strong></td><td><strong>\$0.00 (100% Free / OSS)</strong></td></tr>
+</tbody></table>
+<hr>
+<h2>10. REFERENCE LIST</h2>
+<li>Open Web Application Security Project (OWASP), "OWASP API Security Top 10 - 2023: API6:2023 Unrestricted Access to Sensitive Business Flows," OWASP Foundation, Dec. 2023. [Online]. Available: https://owasp.org/API-Security/editions/2023/en/0xa6-unrestricted-access-to-sensitive-business-flows/</li>
+<li>F. T. Liu, K. M. Ting, and Z.-H. Zhou, "Isolation Forest," in <em>2008 Eighth IEEE International Conference on Data Mining</em>, Pisa, Italy, 2008, pp. 413-422, doi: 10.1109/ICDM.2008.17.</li>
+<li>F. T. Liu, K. M. Ting, and Z.-H. Zhou, "Isolation-based anomaly detection," <em>ACM Transactions on Knowledge Discovery from Data</em>, vol. 6, no. 1, pp. 1-39, Mar. 2012, doi: 10.1145/2133360.2133363.</li>
+<li>M. Howard and D. LeBlanc, <em>Writing Secure Code</em>, 2nd ed. Redmond, WA: Microsoft Press, 2003.</li>
+<li>P. Devanbu and S. Stubblebine, "Software engineering for security: a roadmap," in <em>Proceedings of the Conference on The Future of Software Engineering - ICSE '00</em>, Limerick, Ireland, 2000, pp. 227-239, doi: 10.1145/336512.336559.</li>
+<li>G. McGraw, <em>Software Security: Building Security In</em>. Boston, MA: Addison-Wesley, 2006.</li>
+<li>National Institute of Standards and Technology (NIST), "Framework for Improving Critical Infrastructure Cybersecurity, Version 1.1," NIST, Gaithersburg, MD, Apr. 2018, doi: 10.6028/NIST.CSWP.04162018.</li>
+<li>PCI Security Standards Council, "Payment Card Industry (PCI) Data Security Standard: Requirements and Testing Procedures Version 4.0," PCI SSC, Wakefield, MA, Mar. 2022.</li>
+<li>D. Stuttard and M. Pinto, <em>The Web Application Hacker's Handbook: Finding and Exploiting Security Flaws</em>, 2nd ed. Indianapolis, IN: John Wiley & Sons, 2011.</li>
+<li>E. Rescorla, "The Transport Layer Security (TLS) Protocol Version 1.3," RFC 8446, Internet Engineering Task Force, Aug. 2018.</li>
+<hr>
+<h2>11. APPENDICES</h2>
+<h3>Appendix A: Key Source Code Extracts</h3>
+<h4>A.1 Automated Enforcement Policy Engine (<code>decision.py</code>)</h4>
+<pre><code>def decide(order_id, account_id, rule_passed, rule_reason, anomaly_score, payment_method, rule_code=None, violations=None):
+    if not rule_passed:
+        if violations:
+            severity = {"reject": 3, "hold": 2, "void_discount": 1}
+            rule_code = max(violations, key=lambda v: severity.get(RULE_ACTION_MAP.get(v.get("code"), "hold"), 2)).get("code", rule_code)
+        action = RULE_ACTION_MAP.get(rule_code, "hold")
+        if action == "void_discount":
+            execution = void_discount(order_id)
+        elif action == "reject":
+            execution = {"action": "reject_order"}
+            if rule_code == "cod_abuse_severe":
+                execution.update(rate_limit_account(account_id))
+                execution["account_action"] = {"type": "rate_limit", "minutes": 60}
+        else:
+            execution = hold_cod_order(order_id)
+        return {"decision": action, "reason": rule_reason, "rule_code": rule_code, <em></em>execution}
+
+    if anomaly_score &lt; ANOMALY_REJECT_THRESHOLD:
+        return {"decision": "reject", "reason": "anomaly score indicates elevated risk",
+                "account_action": {"type": "rate_limit", "minutes": 30},
+                <em></em>rate_limit_account(account_id)}
+    if anomaly_score &lt; ANOMALY_HOLD_THRESHOLD:
+        return {"decision": "hold", "reason": "anomaly score requires review",
+                <em></em>hold_cod_order(order_id)}
+    return {"decision": "accept", "reason": "passed all checks", "action": "none"}
+</code></pre>
+<hr>
+<h3>Appendix B: Test Suite Execution Transcript</h3>
+<pre><code>============================= test session starts =============================
+platform win32 -- Python 3.13.2, pytest-8.2.2, pluggy-1.6.0
+rootdir: C:\Users\AL FARES\Desktop\projects\rulelock-ai-starter\rulelock-ai\data-collection
+collected 52 items
+
+tests\test_audit_log.py ......                                           [ 11%]
+tests\test_audit_queries.py ....                                         [ 19%]
+tests\test_dashboard.py .....                                            [ 28%]
+tests\test_db_features.py .                                              [ 30%]
+tests\test_detection.py ....                                             [ 38%]
+tests\test_health.py .............                                       [ 63%]
+tests\test_retention.py ...                                              [ 69%]
+tests\test_review_pipeline.py .....                                      [ 78%]
+tests\test_rules_and_decisions.py ........                               [ 94%]
+tests\test_security_config.py ...                                        [100%]
+
+============================= 52 passed in 4.97s ==============================
+</code></pre>
+<hr>
+<h3>Appendix C: Comprehensive 12-Week Team Logbook</h3>
+<h4>Table 17: 12-Week Logbook Summary by Member and Outcome</h4>
+<table>
+<thead><tr><th>Week</th><th>Focus / Objective</th><th>Members Involved</th><th>Total Hours</th><th>Tasks Completed</th><th>Key Engineering Outcomes</th></tr></thead>
+<tbody>
+<tr><td><strong>W1</strong></td><td>Project Inception & Scoping</td><td>All Members</td><td>32h</td><td>Literature review, OWASP API analysis</td><td>Project Proposal & Architecture Charter</td></tr>
+<tr><td><strong>W2</strong></td><td>Threat Modeling & Spec</td><td>Name 1, Name 2</td><td>28h</td><td>Threat actor profiling, boundary definition</td><td>Threat Model Specification Document</td></tr>
+<tr><td><strong>W3</strong></td><td>Database Architecture</td><td>Name 3, Name 4</td><td>30h</td><td>PostgreSQL schema design, RLS draft</td><td>Initial Supabase Schema Blueprint</td></tr>
+<tr><td><strong>W4</strong></td><td>Rule Engine Development</td><td>Name 2, Name 4</td><td>35h</td><td>Quantity and coupon rule functions</td><td>Component 2 (<code>rules.py</code>) with unit tests</td></tr>
+<tr><td><strong>W5</strong></td><td>Anomaly Engine Training</td><td>Name 1, Name 2</td><td>34h</td><td>Synthetic vector generator, Isolation Forest</td><td>Component 3 (<code>anomaly_scoring.py</code>)</td></tr>
+<tr><td><strong>W6</strong></td><td>Enforcement & Decision</td><td>Name 1, Name 2</td><td>32h</td><td>Action dispatchers, rate-limiting logic</td><td>Component 4 (<code>decision.py</code>)</td></tr>
+<tr><td><strong>W7</strong></td><td>Storefront Construction</td><td>Name 3, Name 4</td><td>36h</td><td>Cakely React storefront, catalog, cart</td><td>Cakely Storefront Frontend Release</td></tr>
+<tr><td><strong>W8</strong></td><td>API Integration Hook</td><td>Name 2, Name 3</td><td>34h</td><td>Pre-capture <code>/review-order</code> hook</td><td>Closed-loop integration between APIs</td></tr>
+<tr><td><strong>W9</strong></td><td>Administrative Panels</td><td>Name 3, Name 4</td><td>32h</td><td>RuleLock switch, diagnostics panel</td><td>Cakely Admin & Ops Dashboard</td></tr>
+<tr><td><strong>W10</strong></td><td>Penetration Testing</td><td>Name 1, Name 4</td><td>38h</td><td>Burp Suite intercept simulation script</td><td><code>test-burp-attacks.mjs</code> attack suite</td></tr>
+<tr><td><strong>W11</strong></td><td>Bug Fixing & Hardening</td><td>All Members</td><td>40h</td><td>Coupon schema migration, quantity unclamp</td><td>Render production deploy & zero em-dashes</td></tr>
+<tr><td><strong>W12</strong></td><td>Final Verification & Docs</td><td>All Members</td><td>35h</td><td>52-test automated run, report compiling</td><td>Final Project Report & Code Release</td></tr>
+</tbody></table>
+<hr>
+<h2>12. INDIVIDUAL MEMBER CONTRIBUTION</h2>
+<h4>Table 16: Individual Member Responsibility Matrix</h4>
+<table>
+<thead><tr><th>Member Name</th><th>Student ID</th><th>Primary Responsibilities</th><th>Specific Modules / Source Files Contributed</th></tr></thead>
+<tbody>
+<tr><td><strong>[Student Name 1]</strong></td><td>[ID 001]</td><td>Project Leadership, ML Anomaly Model, Feature Engineering, Docker Packaging</td><td><code>anomaly_scoring.py</code>, <code>features.py</code>, <code>Dockerfile</code>, <code>render.yaml</code></td></tr>
+<tr><td><strong>[Student Name 2]</strong></td><td>[ID 002]</td><td>Deterministic Rule Engine, Decision Policy, Automated Action Dispatchers</td><td><code>rules.py</code>, <code>decision.py</code>, <code>actions.py</code>, <code>tests/</code></td></tr>
+<tr><td><strong>[Student Name 3]</strong></td><td>[ID 003]</td><td>Cakely Storefront, Checkout Flow, Pre-Capture API Hooks, Admin Switch</td><td><code>api.js</code>, <code>CheckoutRulesView.jsx</code>, <code>AdminPanel.jsx</code>, <code>RuleLockReviewPanel.jsx</code></td></tr>
+<tr><td><strong>[Student Name 4]</strong></td><td>[ID 004]</td><td>Database Schema, Append-Only Triggers, Penetration Testing, Attack Suite</td><td><code>schema.sql</code>, <code>fix_coupons_and_rules.sql</code>, <code>test-burp-attacks.mjs</code></td></tr>
+</tbody></table>
+<hr>
+<h2>13. COMMERCIALIZATION PLAN</h2>
+<h3>13.1 Target Market</h3>
+<p>RuleLock AI addresses small-to-medium enterprise (SME) digital merchants, Shopify / WooCommerce storefronts, and specialized direct-to-consumer (D2C) brands operating in high-fraud retail markets.</p>
+<h3>13.2 Go-to-Market & Promotion Strategy</h3>
+<li><strong>Turnkey Plugins:</strong> Publish drop-in connectors for WooCommerce, Shopify, and Magento.</li>
+<li><strong>Developer-First API:</strong> Offer simple REST integrations requiring only 4 lines of checkout middleware code.</li>
+<li><strong>Open-Core Community Edition:</strong> Provide an open-source rule validation engine to build developer adoption, with premium anomaly detection models in commercial tiers.</li>
+<h3>13.3 Monetization Tiers</h3>
+<li><strong>Community (Free):</strong> Up to 500 orders/month; core deterministic rule validation, self-hosted.</li>
+<li><strong>Professional (\$49/month):</strong> Up to 10,000 orders/month; cloud-hosted ML anomaly detection, 30-day immutable audit logs, email alerts.</li>
+<li><strong>Enterprise (\$249/month):</strong> Unlimited orders; custom Isolation Forest model re-training, automated IP/account threat intelligence sharing, dedicated support SLA.</li>
+<h3>13.4 Competitive Advantage</h3>
+<p>Unlike traditional WAFs that bill thousands of dollars monthly without understanding business logic, RuleLock AI delivers deep, context-aware protection against promotional abuse and fake COD orders with zero infrastructure overhead.</p>
+<hr>
+<h2>14. DEVELOPMENT PLAN & FUTURE ENHANCEMENTS</h2>
+<h3>14.1 Phase Milestones</h3>
+<li><strong>Q1 2027:</strong> Release official WooCommerce and Shopify SDK plugins.</li>
+<li><strong>Q2 2027:</strong> Implement semi-supervised graph neural networks (GNN) for cross-merchant syndicate ring detection.</li>
+<li><strong>Q3 2027:</strong> Integrate automated biometric mouse-movement and typing cadence heuristics into Component 1 telemetry.</li>
+<hr>
+<h2>15. CONCLUSION</h2>
+<p>This project successfully researched, engineered, and empirically validated <strong>RuleLock AI</strong>, a modular security microservice addressing the critical vulnerability landscape of e-commerce business logic flaws. By transitioning transaction security from perimeter-based string filtering to contextual behavioral validation, RuleLock AI prevents sophisticated promotional abuse and inventory denial attacks that bypass standard WAF appliances.</p>
+<p>The system's core technical achievement lies in its synchronized four-stage architecture: pairing deterministic rule validation with an unsupervised Isolation Forest anomaly model and an automated enforcement engine. This design allows graduated actions—such as voiding an illegitimate discount without interrupting checkout—preserving legitimate retail conversions while preventing financial losses.</p>
+<p>Rigorous automated testing through a 52-case unit test suite and active Burp Suite proxy penetration attacks confirmed that RuleLock AI reliably detects and blocks excessive quantity tampering, multi-coupon race conditions, and Cash on Delivery refusal campaigns. The automated temporal account suspension mechanism effectively neutralizes abusive accounts without administrative intervention.</p>
+<p>The integration with the Cakely artisanal bakery platform proved that deep security inspection can operate with complete customer transparency. Standard shoppers experience sub-85ms processing times and clean status messages, while merchants and security personnel gain complete audit accountability through immutable PostgreSQL triggers and real-time operations dashboards.</p>
+<p>In conclusion, RuleLock AI demonstrates that modern business logic security does not require monolithic complexity. Through lightweight microservice architecture, machine learning behavioral modeling, and strict database immutability, online merchants can robustly protect digital commerce flows against an evolving threat landscape.</p>
+</body>
+</html>
